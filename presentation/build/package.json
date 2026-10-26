@@ -1,0 +1,25 @@
+{
+  "name": "footurex-presentation-build",
+  "version": "1.0.0",
+  "description": "Generator for the FootureX Uzbekistan 117-slide corporate presentation",
+  "main": "index.js",
+  "scripts": {
+    "renders": "node render.js hero && node render.js stadium && node render.js city && node render.js city phases phases && node render.js city smart smart && node render.js ai && node render.js datacenter && node render.js arena && node render.js academy && node render.js map",
+    "ui": "node ui.js",
+    "model": "node finmodel.js",
+    "deck": "node build.js",
+    "build": "node finmodel.js && node build.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "pptxgenjs": "^4.0.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "react-icons": "^5.7.0",
+    "sharp": "^0.35.5",
+    "three": "^0.160.0"
+  }
+}

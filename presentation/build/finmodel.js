@@ -27,7 +27,8 @@ const perCoin = packs.map(([q, p]) => ({ qty: q, usd: p, usdPerCoin: p / q, coin
 const minUsd = Math.min(...perCoin.map((x) => x.usdPerCoin)), maxUsd = Math.max(...perCoin.map((x) => x.usdPerCoin));
 const packUsd = gamePacks.filter((g) => g[2] === 'FTXcoin').map(([n, , , q]) => ({ name: n, ftx: q, usdLow: q * minUsd, usdHigh: q * maxUsd }));
 const leagueFull = leagues.map(([n, cr, fee, a, b, c]) => ({ name: n, create: cr, fee, creator: a, pool: b, treasury: c, seats: seats.limit, gross: fee * seats.limit, toCreator: a * seats.limit, toPool: b * seats.limit, toTreasury: c * seats.limit, check: a + b + c === fee }));
-const pass = { ...premiumPass, perDay: premiumPass.price / premiumPass.days, seasonsPerYear: 365 / premiumPass.days, maxPerYear: premiumPass.price * (365 / premiumPass.days) };
+const fullSeasons = Math.floor(365 / premiumPass.days); // same as INT() in the workbook
+const pass = { ...premiumPass, perDay: premiumPass.price / premiumPass.days, seasonsPerYear: fullSeasons, maxPerYear: premiumPass.price * fullSeasons };
 
 const out = { source: SRC, packs: perCoin, minUsd, maxUsd, gamePacks, packUsd, leagues: leagueFull, seats, pass };
 fs.writeFileSync(path.join(__dirname, '..', 'assets', 'finmodel.json'), JSON.stringify(out, null, 1));
@@ -48,12 +49,15 @@ fs.writeFileSync(path.join(__dirname, '..', 'assets', 'finmodel.json'), JSON.str
     ['Лист', 'Содержание', 'Статус данных'],
     ['Каталог BX-013', 'Цены пакетов FTXcoin, Premium Pass, игровых наборов, лиг (синий шрифт — значения документа)', 'Документ BX-013 v1.0'],
     ['Расчёты по каталогу', 'Цена 1 FTXcoin по пакетам, долларовый эквивалент наборов, распределение взносов лиги', 'Расчёт по данным BX (формулы)'],
-    ['Драйверы (шаблон)', 'Дерево драйверов на 5 лет: пустые жёлтые ячейки заполняет руководство', 'Требуется подтверждение'],
+    ['Сценарии', 'Коэффициенты пессимистичного / базового / оптимистичного сценария к драйверам; выбор сценария — ячейка B3', 'Требуется подтверждение'],
+    ['Драйверы (шаблон)', 'Дерево драйверов на 5 лет: пустые жёлтые ячейки заполняет руководство; итоги пусты, пока не введены их вводы. Включает P&L, денежные потоки, ROI, окупаемость, безубыточность, CAC, LTV', 'Требуется подтверждение'],
     ['Классификация', 'Разграничение: реальные данные / расчёт / требует подтверждения', '—'],
     ['', '', ''],
-    ['Правила', 'Revenue = реальные платежи через Telegram Stars / TON. Sink (расход валюты) ≠ выручка. Оборот между пользователями ≠ выручка платформы.', 'BX-013'],
+    ['Правила', 'Revenue игры = реальные платежи через Telegram Stars / TON (BX-013) + B2B-договоры (партнёрства, реклама). Sink (расход валюты) ≠ выручка. Оборот между пользователями ≠ выручка платформы.', 'BX-013, BX-001'],
     ['', 'Игровые показатели не переносятся на всю компанию FootureX Uzbekistan.', 'Консолидированное ТЗ'],
     ['', 'Комиссии Telegram/TON и налоги в BX-013 не указаны — в шаблоне вынесены отдельными вводами.', 'Требуется подтверждение'],
+    ['', 'Доли (%) вводятся десятичной дробью: 0,05 = 5%. Ввод проверяется (0–1).', '—'],
+    ['Пересчёт', 'Файл, собранный генератором, содержит формулы без сохранённых значений; Excel пересчитает их при открытии. Для превью без Excel: пересчёт в LibreOffice (см. README репозитория).', '—'],
   ].forEach((row, i) => { if (i === 0) r.addRow([]); r.addRow(row); });
   head(r, 4);
   r.columns = [{ width: 22 }, { width: 95 }, { width: 28 }];
@@ -65,10 +69,11 @@ fs.writeFileSync(path.join(__dirname, '..', 'assets', 'finmodel.json'), JSON.str
   packs.forEach(([q, p]) => { const row = c.addRow(['Пакет ' + q, q, p]); row.getCell(2).font = inputFont; row.getCell(3).font = inputFont; row.getCell(3).numFmt = '$0.00'; });
   c.addRow(['Пакет 120 исключён из каталога']);
   c.addRow([]); const pr = c.addRow(['Battle Pass', 'Цена, USD', 'Дней в сезоне', 'Уровней']); head(c, pr.number);
-  c.addRow(['Free Pass', 0, 14, 100]);
+  c.addRow(['Free Pass (дни и уровни — допущение по аналогии с Premium)', 0, 14, 100]);
   const pp = c.addRow(['Premium Pass', premiumPass.price, premiumPass.days, premiumPass.levels]); [2, 3, 4].forEach((k) => (pp.getCell(k).font = inputFont)); pp.getCell(2).numFmt = '$0.00';
   c.addRow([]); const gh = c.addRow(['Игровые наборы', 'Цена', 'Валюта', 'Кол-во']); head(c, gh.number);
-  gamePacks.forEach(([n, t, cur, q]) => { const row = c.addRow([n, t, cur || '—', q]); row.getCell(4).font = inputFont; });
+  const packRow = {};
+  gamePacks.forEach(([n, t, cur, q]) => { const row = c.addRow([n, t, cur || '—', q]); row.getCell(4).font = inputFont; packRow[n] = row.number; });
   c.addRow([]); const lh = c.addRow(['Лиги', 'Создание, FTXcoin', 'Взнос за 7 дней', 'Создателю', 'Призовой фонд', 'Казна']); head(c, lh.number);
   c.addRow(['Системные (ранги 19–100)', 0, 0, 0, 0, 0]);
   const leagueRow0 = c.rowCount + 1;
@@ -93,11 +98,11 @@ fs.writeFileSync(path.join(__dirname, '..', 'assets', 'finmodel.json'), JSON.str
   const minRef = `D${mn.number}`, maxRef = `D${mx.number}`;
   k.addRow([]); const ph = k.addRow(['Набор', 'FTXcoin', 'Эквивалент USD (мин.)', 'Эквивалент USD (макс.)']); head(k, ph.number);
   gamePacks.filter((g) => g[2] === 'FTXcoin').forEach(([n, , , q]) => {
-    const row = k.addRow([n, q, null, null]); const rn = row.number;
+    const row = k.addRow([n, { formula: `'Каталог BX-013'!D${packRow[n]}` }, null, null]); const rn = row.number;
     row.getCell(3).value = { formula: `B${rn}*${minRef}` }; row.getCell(4).value = { formula: `B${rn}*${maxRef}` };
     row.getCell(3).numFmt = '$0.00'; row.getCell(4).numFmt = '$0.00';
   });
-  k.addRow([]); const lh2 = k.addRow(['Лига при полном составе', 'Мест', 'Взносы за сезон, FTXcoin', 'Создателю', 'Призовой фонд', 'Казна (sink)']); head(k, lh2.number);
+  k.addRow([]); const lh2 = k.addRow(['Лига при лимите мест (максимум)', 'Мест', 'Взносы за сезон, FTXcoin', 'Создателю', 'Призовой фонд', 'Казна']); head(k, lh2.number);
   leagues.forEach((l, i) => {
     const cr = leagueRow0 + i;
     const row = k.addRow([l[0], { formula: `'Каталог BX-013'!F${seatsRow}` }]); const rn = row.number;
@@ -106,65 +111,106 @@ fs.writeFileSync(path.join(__dirname, '..', 'assets', 'finmodel.json'), JSON.str
     row.getCell(5).value = { formula: `B${rn}*'Каталог BX-013'!E${cr}` };
     row.getCell(6).value = { formula: `B${rn}*'Каталог BX-013'!F${cr}` };
   });
-  k.addRow(['Взносы — внутриигровая валюта: оборот между пользователями и sink, а не денежная выручка платформы.']);
-  k.addRow([]); const bh = k.addRow(['Premium Pass', 'USD за сезон', 'USD в день', 'Сезонов в год', 'Макс. USD в год на 1 плательщика']); head(k, bh.number);
+  k.addRow(['Взносы — внутриигровая валюта: оборот между пользователями и расход валюты, а не денежная выручка. Базовое число мест BX-013 не задаёт; назначение казны не определено.']);
+  k.addRow([]); const bh = k.addRow(['Premium Pass', 'USD за сезон', 'USD в день', 'Полных сезонов в год', 'Макс. USD в год на 1 плательщика']); head(k, bh.number);
   const bp = k.addRow(['Premium Pass', { formula: `'Каталог BX-013'!B${pp.number}` }]); const bn = bp.number;
-  bp.getCell(3).value = { formula: `B${bn}/'Каталог BX-013'!C${pp.number}` }; bp.getCell(4).value = { formula: `365/'Каталог BX-013'!C${pp.number}` }; bp.getCell(5).value = { formula: `B${bn}*D${bn}` };
-  bp.getCell(2).numFmt = '$0.00'; bp.getCell(3).numFmt = '$0.000'; bp.getCell(4).numFmt = '0.0'; bp.getCell(5).numFmt = '$0.00';
+  bp.getCell(3).value = { formula: `B${bn}/'Каталог BX-013'!C${pp.number}` }; bp.getCell(4).value = { formula: `INT(365/'Каталог BX-013'!C${pp.number})` }; bp.getCell(5).value = { formula: `B${bn}*D${bn}` };
+  bp.getCell(2).numFmt = '$0.00'; bp.getCell(3).numFmt = '$0.000'; bp.getCell(4).numFmt = '0'; bp.getCell(5).numFmt = '$0.00';
   k.columns = [{ width: 30 }, { width: 12 }, { width: 24 }, { width: 22 }, { width: 30 }, { width: 14 }];
 
-  // 4. Driver template — blank inputs, formula outputs
-  const t = wb.addWorksheet('Драйверы (шаблон)');
-  title(t, 'Шаблон драйверной модели FootureX Game на 5 лет', 'Жёлтые ячейки — вводы руководства (сейчас пусто). Результаты считаются формулами. Не переносится на всю компанию.');
-  t.addRow([]); t.addRow(['Показатель', 'Ед.', 'Год 1', 'Год 2', 'Год 3', 'Год 4', 'Год 5', 'Источник / формула']); head(t, 4);
-  const rows = {};
-  const add = (key, label, unit, f, src) => {
-    const vals = [];
-    for (let i = 0; i < 5; i++) { const col = String.fromCharCode(67 + i); vals.push(f ? { formula: f(col) } : null); }
-    const row = t.addRow([label, unit, ...vals, src]); rows[key] = row.number;
-    if (!f) for (let i = 3; i <= 7; i++) row.getCell(i).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: TODO } };
-    return row;
-  };
-  const R = (k2, col) => `${col}${rows[k2]}`;
-  const sec = (s) => { const row = t.addRow([s]); row.font = { bold: true, color: { argb: BLUE } }; };
-  sec('Аудитория (BX-008 KPI)');
-  add('mau', 'MAU, средний', 'чел.', null, 'Требуется подтверждение');
-  add('dau', 'DAU, средний', 'чел.', null, 'Требуется подтверждение');
-  add('ret', 'Retention D30', '%', null, 'Требуется подтверждение');
-  add('conv', 'Conversion в платящих (в месяц)', '%', null, 'Требуется подтверждение');
-  add('new', 'Новые пользователи за год', 'чел.', null, 'Требуется подтверждение');
-  sec('Денежная выручка (только Stars / TON)');
-  add('payers', 'Платящие в месяц', 'чел.', (c2) => `${R('mau', c2)}*${R('conv', c2)}`, '= MAU × Conversion');
-  add('arppu', 'ARPPU в месяц', 'USD', null, 'Требуется подтверждение; цены — лист «Каталог BX-013»');
-  add('months', 'Месяцев коммерческой работы', 'мес.', null, 'Требуется подтверждение');
-  add('iap', 'Покупки (Premium Pass, FTXcoin, косметика)', 'USD', (c2) => `${R('payers', c2)}*${R('arppu', c2)}*${R('months', c2)}`, '= платящие × ARPPU × месяцы');
-  add('part', 'Партнёрства, реклама, спонсорство', 'USD', null, 'Требуется подтверждение (BX-001)');
-  add('rev', 'Revenue (валовая)', 'USD', (c2) => `${R('iap', c2)}+${R('part', c2)}`, 'Сумма');
-  add('fee', 'Комиссии платформ и платёжных провайдеров', '% IAP', null, 'Не указаны в BX — требуется подтверждение');
-  sec('Затраты');
-  add('cogs', 'Хостинг, инфраструктура, LiveOps (прямые)', 'USD', null, 'Требуется подтверждение');
-  add('gp', 'Gross Profit', 'USD', (c2) => `${R('rev', c2)}-${R('iap', c2)}*${R('fee', c2)}-${R('cogs', c2)}`, '= Revenue − комиссии − прямые затраты');
-  add('gm', 'Gross Margin', '%', (c2) => `IF(${R('rev', c2)}=0,"",${R('gp', c2)}/${R('rev', c2)})`, '= GP / Revenue');
-  add('team', 'Команда (BX-002 роли)', 'USD', null, 'Требуется подтверждение');
-  add('ua', 'Маркетинг и привлечение (UA)', 'USD', null, 'Требуется подтверждение');
-  add('other', 'Прочие OPEX', 'USD', null, 'Требуется подтверждение');
-  add('ebitda', 'EBITDA', 'USD', (c2) => `${R('gp', c2)}-${R('team', c2)}-${R('ua', c2)}-${R('other', c2)}`, '= GP − OPEX');
-  add('da', 'Амортизация', 'USD', null, 'Требуется подтверждение');
-  add('tax', 'Налог на прибыль', '%', null, 'Требуется подтверждение (режим IT Park — уточнить)');
-  add('np', 'Net Profit', 'USD', (c2) => `(${R('ebitda', c2)}-${R('da', c2)})*(1-${R('tax', c2)})`, '= (EBITDA − D&A) × (1 − налог)');
-  add('wc', 'Изменение оборотного капитала', 'USD', null, 'Требуется подтверждение');
-  add('ocf', 'Operating Cash Flow', 'USD', (c2) => `${R('np', c2)}+${R('da', c2)}-${R('wc', c2)}`, '= NP + D&A − ΔWC');
-  add('capex', 'CAPEX', 'USD', null, 'Требуется подтверждение');
-  add('fcf', 'Free Cash Flow', 'USD', (c2) => `${R('ocf', c2)}-${R('capex', c2)}`, '= OCF − CAPEX');
-  add('cum', 'Накопленный FCF', 'USD', (c2) => (c2 === 'C' ? `${R('fcf', c2)}` : `${String.fromCharCode(c2.charCodeAt(0) - 1)}${rows.fcf + 1}+${R('fcf', c2)}`), 'Нарастающим итогом');
-  sec('Юнит-экономика');
-  add('cac', 'CAC', 'USD', (c2) => `IF(${R('new', c2)}=0,"",${R('ua', c2)}/${R('new', c2)})`, '= UA / новые пользователи');
-  add('life', 'Средний срок жизни платящего', 'мес.', null, 'Требуется подтверждение');
-  add('ltv', 'LTV платящего', 'USD', (c2) => `${R('arppu', c2)}*(1-${R('fee', c2)})*${R('life', c2)}`, '= ARPPU × (1 − комиссия) × срок жизни');
-  add('roi', 'ROI (накопленный)', '%', null, 'Считается после ввода инвестиций');
-  t.columns = [{ width: 44 }, { width: 9 }, { width: 13 }, { width: 13 }, { width: 13 }, { width: 13 }, { width: 13 }, { width: 52 }];
+  // 4. Scenarios — multipliers on the base drivers (blank = 1), selected by a single cell
+  const sc = wb.addWorksheet('Сценарии');
+  title(sc, 'Сценарии: коэффициенты к базовым драйверам', 'Выберите сценарий в ячейке B3 (1 — пессимистичный, 2 — базовый, 3 — оптимистичный). Пустой коэффициент = 1. Значения не заданы.');
+  const selRow = sc.addRow(['Выбранный сценарий', 2]); selRow.getCell(2).font = inputFont;
+  const SEL = `$B$${selRow.number}`;
+  selRow.getCell(2).dataValidation = { type: 'list', allowBlank: false, formulae: ['"1,2,3"'] };
+  sc.addRow([]); const sh = sc.addRow(['Драйвер', 'Пессимистичный', 'Базовый', 'Оптимистичный', 'Применяется']); head(sc, sh.number);
+  const mult = {};
+  [['conv', 'Conversion'], ['arppu', 'ARPPU'], ['life', 'Срок жизни платящего (Retention)'], ['ua', 'Затраты на привлечение (CAC)'], ['months', 'Месяцев коммерческой работы (срок перехода к Growth)']].forEach(([key, label]) => {
+    const row = sc.addRow([label, null, null, null]); const rn = row.number;
+    for (let q = 2; q <= 4; q++) { row.getCell(q).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: TODO } }; row.getCell(q).numFmt = '0.00'; row.getCell(q).dataValidation = { type: 'decimal', operator: 'between', allowBlank: true, formulae: [0, 5], showErrorMessage: true, errorTitle: 'Коэффициент', error: 'Коэффициент к базовому драйверу: от 0 до 5 (1 = без изменений)' }; }
+    row.getCell(5).value = { formula: `IF(INDEX(B${rn}:D${rn},1,${SEL})="",1,INDEX(B${rn}:D${rn},1,${SEL}))` }; row.getCell(5).numFmt = '0.00';
+    mult[key] = `'Сценарии'!$E$${rn}`;
+  });
+  sc.columns = [{ width: 46 }, { width: 16 }, { width: 14 }, { width: 16 }, { width: 14 }];
 
-  // 5. Classification
+  // 5. Driver template — blank inputs, formula outputs (outputs stay empty until their inputs are filled)
+  const t = wb.addWorksheet('Драйверы (шаблон)');
+  title(t, 'Шаблон драйверной модели FootureX Game на 5 лет', 'Жёлтые ячейки — вводы руководства (сейчас пусто). Результаты — формулы с учётом листа «Сценарии». Не переносится на всю компанию.');
+  t.addRow([]); t.addRow(['Показатель', 'Ед.', 'Год 1', 'Год 2', 'Год 3', 'Год 4', 'Год 5', 'Источник / формула']); head(t, 4);
+  const rows = {}, deps = {};
+  const FMT = { 'USD': '#,##0;[Red]-#,##0', 'чел.': '#,##0', '%': '0.0%', 'мес.': '0.0', 'USD/мес.': '#,##0.00', 'x': '0.0' };
+  const cols = ['C', 'D', 'E', 'F', 'G'];
+  const R = (k2, col) => `${col}${rows[k2]}`;
+  const Nn = (k2, col) => `N(${R(k2, col)})`;
+  const input = (key, label, unit, src) => {
+    const row = t.addRow([label, unit, null, null, null, null, null, src]); rows[key] = row.number; deps[key] = [key];
+    for (let q = 3; q <= 7; q++) {
+      row.getCell(q).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: TODO } };
+      row.getCell(q).numFmt = FMT[unit] || '#,##0';
+      if (unit === '%') row.getCell(q).dataValidation = { type: 'decimal', operator: 'between', allowBlank: true, formulae: [0, 1], showErrorMessage: true, errorTitle: 'Доля', error: 'Введите долю от 0 до 1 (например, 0,05 = 5%)' };
+    }
+  };
+  // calc: f(col) -> expression; dep: keys whose inputs must be present (any) for the row to show a value
+  const calc = (key, label, unit, f, dep, src, fmt) => {
+    const ins = [...new Set(dep.flatMap((d2) => deps[d2]))];
+    deps[key] = ins;
+    const row = t.addRow([label, unit, ...cols.map((c2) => ({ formula: `IF(COUNT(${ins.map((d2) => R(d2, c2)).join(',')})=0,"",${f(c2)})` })), src]);
+    rows[key] = row.number;
+    for (let q = 3; q <= 7; q++) row.getCell(q).numFmt = fmt || FMT[unit] || '#,##0';
+  };
+  const sec = (s2) => { const row = t.addRow([s2]); row.font = { bold: true, color: { argb: BLUE } }; };
+  sec('Аудитория (KPI BX-008)');
+  input('mau', 'MAU, средний', 'чел.', 'Требуется подтверждение');
+  input('dau', 'DAU, средний (справочно, KPI)', 'чел.', 'Требуется подтверждение');
+  input('ret', 'Retention D30 (справочно, KPI)', '%', 'Требуется подтверждение');
+  input('conv', 'Conversion в платящих (в месяц)', '%', 'Требуется подтверждение');
+  input('new', 'Новые пользователи за год', 'чел.', 'Требуется подтверждение');
+  sec('Денежная выручка через Telegram Stars / TON (BX-013)');
+  calc('payers', 'Платящие в месяц', 'чел.', (c2) => `${Nn('mau', c2)}*${Nn('conv', c2)}*${mult.conv}`, ['mau', 'conv'], '= MAU × Conversion × коэффициент сценария');
+  input('arppu', 'ARPPU в месяц', 'USD/мес.', 'Требуется подтверждение; цены — лист «Каталог BX-013»');
+  input('months', 'Месяцев коммерческой работы', 'мес.', 'Требуется подтверждение');
+  calc('iap', 'Покупки: Premium Pass, пакеты FTXcoin, косметика', 'USD', (c2) => `${Nn('payers', c2)}*${Nn('arppu', c2)}*${mult.arppu}*${Nn('months', c2)}*${mult.months}`, ['payers', 'arppu', 'months'], '= платящие × ARPPU × месяцы (× сценарий)');
+  input('fee', 'Комиссии платформ и платёжных провайдеров', '%', 'Не указаны в BX — требуется подтверждение');
+  sec('Прочая денежная выручка (B2B-договоры, не Stars / TON)');
+  input('part', 'Партнёрства, реклама, спонсорство', 'USD', 'Требуется подтверждение (BX-001)');
+  sec('Итог выручки и затраты');
+  calc('rev', 'Revenue (валовая)', 'USD', (c2) => `${Nn('iap', c2)}+${Nn('part', c2)}`, ['iap', 'part'], '= покупки + B2B');
+  input('cogs', 'Хостинг, инфраструктура, LiveOps (прямые, постоянные)', 'USD', 'Требуется подтверждение');
+  input('vcost', 'Переменные затраты на платящего в месяц', 'USD/мес.', 'Требуется подтверждение (поддержка, платёжная обработка и т. п.)');
+  calc('gp', 'Gross Profit', 'USD', (c2) => `${Nn('rev', c2)}-${Nn('iap', c2)}*${Nn('fee', c2)}-${Nn('cogs', c2)}-${Nn('payers', c2)}*${Nn('vcost', c2)}*${Nn('months', c2)}*${mult.months}`, ['rev', 'fee', 'cogs', 'vcost'], '= Revenue − комиссии с покупок − прямые затраты − переменные затраты на платящих');
+  calc('gm', 'Gross Margin', '%', (c2) => `IF(${Nn('rev', c2)}=0,"",${Nn('gp', c2)}/${Nn('rev', c2)})`, ['gp'], '= GP / Revenue');
+  input('team', 'Команда (роли BX-002)', 'USD', 'Требуется подтверждение');
+  input('ua', 'Маркетинг и привлечение (UA)', 'USD', 'Требуется подтверждение');
+  input('other', 'Прочие OPEX', 'USD', 'Требуется подтверждение');
+  calc('ebitda', 'EBITDA', 'USD', (c2) => `${Nn('gp', c2)}-${Nn('team', c2)}-${Nn('ua', c2)}*${mult.ua}-${Nn('other', c2)}`, ['gp', 'team', 'ua', 'other'], '= GP − команда − UA × сценарий − прочие OPEX');
+  input('da', 'Амортизация (D&A)', 'USD', 'Требуется подтверждение');
+  input('tax', 'Ставка налога на прибыль', '%', 'Требуется подтверждение (режим IT Park — уточнить)');
+  calc('pbt', 'Прибыль до налога', 'USD', (c2) => `${Nn('ebitda', c2)}-${Nn('da', c2)}`, ['ebitda', 'da'], '= EBITDA − D&A');
+  calc('np', 'Net Profit', 'USD', (c2) => `${Nn('pbt', c2)}-MAX(0,${Nn('pbt', c2)})*${Nn('tax', c2)}`, ['pbt', 'tax'], '= прибыль до налога − налог (налог только с положительной прибыли; переносы убытков не моделируются)');
+  input('wc', 'Изменение оборотного капитала', 'USD', 'Требуется подтверждение');
+  calc('ocf', 'Operating Cash Flow', 'USD', (c2) => `${Nn('np', c2)}+${Nn('da', c2)}-${Nn('wc', c2)}`, ['np', 'wc'], '= NP + D&A − ΔWC');
+  input('capex', 'CAPEX', 'USD', 'Требуется подтверждение');
+  calc('fcf', 'Free Cash Flow', 'USD', (c2) => `${Nn('ocf', c2)}-${Nn('capex', c2)}`, ['ocf', 'capex'], '= OCF − CAPEX');
+  calc('cum', 'Накопленный FCF', 'USD', (c2) => (c2 === 'C' ? Nn('fcf', c2) : `N(${String.fromCharCode(c2.charCodeAt(0) - 1)}${rows.fcf + 1})+${Nn('fcf', c2)}`), ['fcf'], 'Нарастающим итогом');
+  sec('Инвестиции и окупаемость (стадии BX-008)');
+  input('inv', 'Привлечённые инвестиции в году', 'USD', 'Подтверждённых инвестиций нет — требуется подтверждение');
+  calc('cuminv', 'Накопленные инвестиции', 'USD', (c2) => (c2 === 'C' ? Nn('inv', c2) : `N(${String.fromCharCode(c2.charCodeAt(0) - 1)}${rows.inv + 1})+${Nn('inv', c2)}`), ['inv'], 'Нарастающим итогом');
+  calc('roi', 'ROI накопленный', '%', (c2) => `IF(${Nn('cuminv', c2)}=0,"",(${Nn('cum', c2)}-${Nn('cuminv', c2)})/${Nn('cuminv', c2)})`, ['cum', 'inv'], '= (накопленный FCF − накопленные инвестиции) / накопленные инвестиции');
+  calc('pb', 'Инвестиции возвращены (1 = да)', 'x', (c2) => `IF(AND(${Nn('cuminv', c2)}>0,${Nn('cum', c2)}>=${Nn('cuminv', c2)}),1,0)`, ['cum', 'inv'], 'Накопленный FCF ≥ накопленные инвестиции', '0');
+  calc('pbs', 'Возврат сохраняется до конца горизонта (1 = да)', 'x', (c2) => `MIN(${c2}${rows.pb}:$G$${rows.pb})`, ['cum', 'inv'], 'Условие выполняется в этом и во всех следующих годах', '0');
+  const pbRow = t.addRow(['Срок окупаемости инвестиций', 'год', { formula: `IF(COUNTIF(C${rows.pbs}:G${rows.pbs},1)=0,"",MATCH(1,C${rows.pbs}:G${rows.pbs},0))` }, null, null, null, null, 'Первый год, начиная с которого накопленный FCF не ниже накопленных инвестиций до конца горизонта; пусто — не достигнута']);
+  rows.payback = pbRow.number;
+  sec('Безубыточность и юнит-экономика');
+  calc('be', 'Точка безубыточности по EBITDA: платящих в месяц', 'чел.', (c2) => `IF(${Nn('arppu', c2)}*${mult.arppu}*(1-${Nn('fee', c2)})-${Nn('vcost', c2)}<=0,"",MAX(0,(${Nn('cogs', c2)}+${Nn('team', c2)}+${Nn('ua', c2)}*${mult.ua}+${Nn('other', c2)}-${Nn('part', c2)})/(${Nn('months', c2)}*${mult.months}))/(${Nn('arppu', c2)}*${mult.arppu}*(1-${Nn('fee', c2)})-${Nn('vcost', c2)}))`, ['arppu', 'months', 'cogs', 'team', 'ua', 'other'], '= (постоянные затраты + UA − B2B-выручка) в месяц работы / (ARPPU × (1 − комиссия) − переменные затраты на платящего); при этом числе платящих EBITDA = 0');
+  calc('cac', 'CAC на нового платящего', 'USD', (c2) => `IF(${Nn('new', c2)}*${Nn('conv', c2)}*${mult.conv}=0,"",${Nn('ua', c2)}*${mult.ua}/(${Nn('new', c2)}*${Nn('conv', c2)}*${mult.conv}))`, ['ua', 'new', 'conv'], '= UA × сценарий / (новые пользователи × Conversion) — та же база, что у LTV', '#,##0.00');
+  input('life', 'Средний срок жизни платящего', 'мес.', 'Требуется подтверждение');
+  calc('ltv', 'LTV платящего', 'USD', (c2) => `(${Nn('arppu', c2)}*${mult.arppu}*(1-${Nn('fee', c2)})-${Nn('vcost', c2)})*${Nn('life', c2)}*${mult.life}`, ['arppu', 'life'], '= (ARPPU × (1 − комиссия) − переменные затраты) × срок жизни (× сценарий)', '#,##0.00');
+  calc('ltvcac', 'LTV / CAC', 'x', (c2) => `IF(OR(${R('cac', c2)}="",${Nn('cac', c2)}=0),"",${Nn('ltv', c2)}/${Nn('cac', c2)})`, ['ltv', 'cac'], '= LTV / CAC');
+  t.columns = [{ width: 46 }, { width: 10 }, { width: 13 }, { width: 13 }, { width: 13 }, { width: 13 }, { width: 13 }, { width: 60 }];
+  t.views = [{ state: 'frozen', xSplit: 2, ySplit: 4 }];
+
+  // 6. Classification
   const z = wb.addWorksheet('Классификация');
   title(z, 'Классификация данных презентации', 'Правило 13 консолидированного ТЗ');
   z.addRow([]); z.addRow(['Категория', 'Примеры', 'Как показано']); head(z, 4);

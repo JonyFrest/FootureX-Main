@@ -17,3 +17,12 @@ window.shot = (cam) => {
   return { img: st.renderer.domElement.toDataURL('image/png'), labels };
 };
 window.ready = true;
+// arbitrary camera for camera-path animation (flythrough.js); returns a JPEG data URL
+window.shotAt = (pos, target, fov, exposure) => {
+  st.camera.fov = fov; st.camera.aspect = W / H; st.camera.position.set(...pos); st.camera.lookAt(...target); st.camera.updateProjectionMatrix();
+  st.renderer.toneMappingExposure = exposure ?? def.opts.exposure ?? 1.0;
+  st.composer.render();
+  return st.renderer.domElement.toDataURL('image/jpeg', 0.92);
+};
+window.camInfo = info.cameras;
+window.defExposure = def.opts.exposure ?? 1.0;

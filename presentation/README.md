@@ -12,9 +12,10 @@
 | `docs/AUDIT.md` | Аудит: источники BX, расхождения документов, классификация данных, соответствие брендбуку, рыночные источники, анимации, перечень 117 слайдов, открытые вопросы |
 | `brand/FootureX_Brandbook.pdf` | Брендбук FootureX v1.0 — главный визуальный стандарт. Помечен «Confidential», поэтому не хранится в публичном репозитории (`.gitignore`); положите файл сюда локально |
 | `brand/brand.json` | Цвета, шрифты и логотипы по брендбуку |
-| `brand/logo/` | Знак, извлечённый из брендбука; локап и двухцветный вордмарк |
+| `brand/logo/` | Знак, локап «знак + FootureX» и двухцветный вордмарк — извлечены из векторных страниц брендбука без перерисовки |
+| `assets/video/` | Облёты концептуальных 3D-моделей Stadium и City (MP4, встраиваются в слайды 83 и 88) |
 | `brand/fonts/` | Шрифты Google Fonts (OFL): Zen Dots, Poppins, Unbounded, Montserrat |
-| `build/` | Генератор: 3D-сцены (three.js), концепты интерфейсов, каталог и шаблон модели, сборка pptx, переходы и анимации |
+| `build/` | Генератор: 3D-сцены (three.js), облёты камеры, концепты интерфейсов, каталог и шаблон модели, сборка pptx, переходы и анимации |
 
 ## Основа содержания
 
@@ -25,7 +26,7 @@
   - нейминг FootureX / FTXcoin / FOOTX;
   - голос бренда, манифест и слоган «We will create a digital football era.»
 - **Документы BX-001…BX-008 и BX-013** — основа направления FootureX Game: архитектура, игровые системы, экономика, техстек, оргструктура, инвестиционные стадии, утверждённый каталог цен.
-- **Остальные направления** (Technologies, AI, Academy, Esports, FC, Football Academy, Stadium, City) описаны по корпоративной концепции и отделены от игры.
+- **Остальные направления** (Technologies, AI, студия Game Development, Game Dev Academy, Game Community, Esports, FC FootureX, Football Academy, Stadium, City) описаны по корпоративной концепции и отделены от игры. Всего в презентации 11 направлений.
 
 ## Важно перед использованием
 
@@ -40,28 +41,37 @@
    - линейка редкости;
    - Stars/TON;
    - горизонт 10–12 и 10–20 лет.
-3. **Шрифты.** В файлах Zen Dots и Poppins нет кириллицы. Латиница набрана Zen Dots и Poppins, русский текст — Unbounded и Montserrat. Для редактирования pptx установите все файлы из `brand/fonts/`. PDF установки шрифтов не требует.
-4. **Переходы Morph** работают в PowerPoint 2019, 2021 и Microsoft 365. В других программах вместо Morph проигрывается Fade.
+3. **Шрифты не встроены в pptx** (генератор этого не умеет). В файлах Zen Dots и Poppins нет кириллицы: латиница набрана Zen Dots и Poppins, русский текст — Unbounded и Montserrat. Перед показом с чужого компьютера установите все файлы из `brand/fonts/` или один раз сохраните pptx в PowerPoint с параметром «Внедрять шрифты в файл». PDF шрифтов не требует.
+4. **Переходы Morph** работают в PowerPoint 2019, 2021 и Microsoft 365. В других программах вместо Morph проигрывается Fade. Воспроизведение в PowerPoint в среде сборки не проверялось (PowerPoint недоступен) — пролистайте презентацию в режиме докладчика перед показом.
+5. **Видео-облёты** на слайдах 83 и 88 запускаются автоматически. В PDF вместо видео показан первый кадр.
 
 ## Пересборка
 
+Нужны Node.js 18+, Python 3 с `lxml` (постобработка: Morph, анимации, видео) и LibreOffice для PDF.
+
 ```bash
 cd presentation/build
-npm install
+npm ci
+pip install lxml
 npm run build        # каталог и шаблон модели + 117 слайдов + переходы и анимации
+python3 export_pdf.py ../output/FootureX_Uzbekistan_Corporate_Presentation.pptx   # PDF без встроенных видео (кадр-заставка)
 ```
+
+`npm run build` пишет xlsx с формулами без сохранённых значений: Excel пересчитает их при открытии. Для превью без Excel пересчитайте файл в LibreOffice (открыть и сохранить).
 
 Цвета, шрифты и логотипы берутся из `brand/brand.json`. Логотип стоит в макетах слайдов, поэтому при замене файла обновляется на всех слайдах.
 
 ## Пересборка ассетов (необязательно)
 
+Рендеры и макеты требуют Playwright с Chromium (в `package.json` не входит, ставится отдельно), облёты — ещё и ffmpeg:
+
 ```bash
-npm run renders   # 3D-концепты (three.js в headless Chromium/Playwright)
+npm install --no-save playwright && npx playwright install chromium
+npm run renders   # 3D-концепты (three.js в headless Chromium)
+npm run video     # облёты камеры Stadium и City → assets/video/*.mp4
 npm run ui        # макеты интерфейсов (HTML → PNG)
 npm run model     # каталог BX-013, расчёты и шаблон модели → assets/finmodel.json + xlsx
 ```
-
-PDF-версия: `soffice --headless --convert-to pdf output/FootureX_Uzbekistan_Corporate_Presentation.pptx`.
 
 ## Структура
 
@@ -72,8 +82,8 @@ I Corporate Identity (1–10) · II Market & Strategy (11–20) · III IT Servic
 - «Брендбук v1.0»;
 - «Расчёт по данным BX»;
 - «Цифры не предоставлены»;
-- «В разработке · Foundation»;
-- «План · Фаза 1»;
+- «Проект · этап Foundation» (FootureX Game спроектирован в документах BX; степень реализации требует подтверждения);
+- «Концепция · Фаза 1» (направления, которые планируется запускать первыми);
 - «Стратегическая концепция»;
 - «Долгосрочная амбиция»;
 - «Рыночные данные»;

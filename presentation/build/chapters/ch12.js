@@ -7,7 +7,7 @@ module.exports = async (d, pres) => {
   await opener(d, {
     img: 'renders/city-smart-smart.jpg', title: 'FootureX Uzbekistan — экосистема будущего', status: 'VISION', scale: 1.1, dx: 2.0,
     lead: 'Через 10–20 лет FootureX — группа, где программное обеспечение, AI, игры, образование, киберспорт и футбол работают как одна система.',
-    points: [['10', 'направлений одной экосистемы'], ['4', 'фазы последовательной реализации'], ['1', 'бренд: FootureX']],
+    points: [['11', 'направлений одной экосистемы'], ['4', 'фазы последовательной реализации'], ['1', 'бренд: FootureX']],
     notes: 'ТЕЗИС: экосистема будущего — результат последовательности, а не одновременного запуска всего.\nВизуализация — концептуальная (Smart City FootureX).\nСвязка: далее — влияние на индустрию Узбекистана.',
   });
 
@@ -21,7 +21,7 @@ module.exports = async (d, pres) => {
     await d.cards(s, [
       { icon: 'LuTrendingUp', title: 'IT-экспорт', text: 'Экспортные проекты Technologies и AI в Центральной Азии и СНГ.' },
       { icon: 'LuGraduationCap', title: 'Кадры индустрии', text: 'Подготовка разработчиков, геймдизайнеров и AI-инженеров.' },
-      { icon: 'LuGamepad2', title: 'Собственная IP', text: 'Игры и AI-продукты, созданные в Узбекистане (цель BX-001).' },
+      { icon: 'LuGamepad2', title: 'Собственная IP', text: 'Игры, созданные в Узбекистане (цель BX-001 — узнаваемая IP); AI-продукты — корпоративная концепция.' },
       { icon: 'LuGoal', title: 'Молодёжь и футбол', text: 'Платформа развития молодёжи и футбольных талантов (цель BX-001).' },
     ], { cols: 4, y: 2.0, h: 2.6, iconLeft: false, titleSize: 13.5, textSize: 11.5 });
     d.card(s, M, 4.85, 7.4, 1.6, { name: 'a5_c' });
@@ -54,12 +54,13 @@ module.exports = async (d, pres) => {
     const s = d.slide({
       master: 'FX_FULL', title: 'FootureX Uzbekistan: Building the Future', status: 'VISION',
       notes: 'ТЕЗИС: FootureX Uzbekistan — это не презентация одной игры, а стратегия технологической компании. Манифест брендбука: «Не игра в Telegram — а спортивная инфраструктура».\nСлоган брендбука: «We will create a digital football era.»\nЗакрытие: благодарность, приглашение к обсуждению партнёрства и инвестиций.\nКонтактные данные — вставить после подтверждения.',
-      pre: (s) => d.fullImage(s, 'renders/hero-final.jpg', { overlay: ['left', 'topbottom'], dx: 3.3, name: '!!render' }),
+      noFooterLogo: true,
+      pre: (s) => d.fullImage(s, 'renders/hero-final.jpg', { overlay: ['left', 'topbottom'], dx: 3.9, name: '!!render' }),
     });
     const lg = logoPath(true);
-    s.addImage({ path: lg.path, x: M, y: 2.15, w: 5.4, h: 5.4 / LOGO_RATIO, objectName: '!!logo' });
+    s.addImage({ path: lg.path, x: M, y: 1.95, w: 4.6, h: 4.6 / LOGO_RATIO, objectName: '!!logo' });
     d.text(s, 'We will create\na digital football era.', { x: M, y: 3.35, w: 7, h: 0.95, fontSize: 22, fontFace: F.displayLatin, color: C.accent, objectName: '!!uz' });
-    d.text(s, 'Технологии · Игры · AI · Образование · Киберспорт · Футбол · Городские инновации', { x: M, y: 4.45, w: 6.6, h: 0.7, fontSize: 14, color: 'E6ECF5' });
+    d.text(s, 'Технологии · Игры · AI · Образование · Киберспорт · Футбол · Городские инновации', { x: M, y: 4.45, w: 6.6, h: 0.7, fontSize: 14, color: 'FFFFFF' });
     d.text(s, 'Благодарим за внимание. Приглашаем к диалогу о партнёрстве и инвестициях.', { x: M, y: 5.15, w: 6.4, h: 0.65, fontSize: 13, color: 'B8C1D4' });
     d.text(s, 'MChJ «FootureX Uzbekistan» · Ташкент, Республика Узбекистан', { x: M, y: 5.9, w: 7, h: 0.3, fontSize: 11, color: 'B8C1D4' });
     d.text(s, 'Контактные данные: требуется подтверждение', { x: M, y: 6.22, w: 7, h: 0.3, fontSize: 10, color: '8A93A6' });

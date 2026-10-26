@@ -10,7 +10,7 @@ export { THREE };
 
 export const PAL = {
   bg: 0x0b0f0e, bg2: 0x0e1629, surface: 0x141c2b, concrete: 0x1c2534, steel: 0xc9d3e3,
-  accent: 0x2593fa, accent2: 0x2550fa, warm: 0xffd9a8, pitch: 0x0d3a28, line: 0x26324a,
+  accent: 0x2593fa, accent2: 0x2550fa, warm: 0xb8c1d4, pitch: 0x13285e, line: 0x26324a,
 };
 
 let seed = 1337;
@@ -136,7 +136,7 @@ export function tree(scale = 1) {
   const g = new THREE.Group();
   const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.6, 3, 5), std(0x1a1f26));
   trunk.position.y = 1.5; g.add(trunk);
-  const crown = new THREE.Mesh(new THREE.IcosahedronGeometry(3.2, 0), std(0x14382c, 0.8, 0.05, { flatShading: true }));
+  const crown = new THREE.Mesh(new THREE.IcosahedronGeometry(3.2, 0), std(0x1a2b4a, 0.8, 0.05, { flatShading: true }));
   crown.position.y = 5.5; crown.castShadow = true; g.add(crown);
   g.scale.setScalar(scale); return g;
 }

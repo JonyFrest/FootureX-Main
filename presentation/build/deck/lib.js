@@ -18,15 +18,36 @@ const TOTAL = 117;
 const warnings = [];
 const isCyr = (t) => /[Ѐ-ӿ]/.test(t);
 const plain = (t) => (Array.isArray(t) ? t.map((r) => (typeof r === 'string' ? r : r.text)).join('') : String(t));
-const bodyFont = () => F.bodyCyrillic; // Montserrat for all running text (Poppins lacks Cyrillic; mixed fonts looked uneven)
+const bodyFont = (t) => (/[●◐○]/.test(t ? plain(t) : '') ? F.displayCyrillic : F.bodyCyrillic); // Montserrat for running text; ●◐○ only exist in Unbounded
 const dispFont = (t) => (isCyr(plain(t)) ? F.displayCyrillic : F.displayLatin);
+// Zen Dots and Poppins have no Cyrillic and no arrows: swap to the matching Cyrillic-capable face when needed
+const safeFont = (font, t) => {
+  const txt = plain(t);
+  if (font === F.displayLatin && /[Ѐ-ӿ→←↔●◐○]/.test(txt)) return F.displayCyrillic;
+  if (font === F.bodyLatin && /[Ѐ-ӿ→←↔●◐○]/.test(txt)) return /[●◐○]/.test(txt) ? F.displayCyrillic : F.bodyCyrillic;
+  return font;
+};
 
 function logoPath(kind = 'onDark') {
   const key = kind === true || kind === false ? 'onDark' : kind;
   return { path: path.join(ROOT, 'brand', BRAND.logo[key]), placeholder: false };
 }
-const LOGO_RATIO = 1209 / 215;   // lockup: mark + FootureX
-const HERO_RATIO = 1034 / 123;   // two-tone wordmark (brandbook cover)
+// logo proportions are read from the files themselves (PNG IHDR), so a replaced logo keeps its geometry
+const pngRatio = (key) => { const b = fs.readFileSync(path.join(ROOT, 'brand', BRAND.logo[key])); return b.readUInt32BE(16) / b.readUInt32BE(20); };
+// image size from PNG (IHDR) or JPEG (SOF) headers
+function imgSize(file) {
+  const b = fs.readFileSync(file);
+  if (b[0] === 0x89) return { w: b.readUInt32BE(16), h: b.readUInt32BE(20) };
+  for (let i = 2; i < b.length - 9;) {
+    if (b[i] !== 0xff) { i++; continue; }
+    const m = b[i + 1];
+    if (m >= 0xc0 && m <= 0xcf && m !== 0xc4 && m !== 0xc8 && m !== 0xcc) return { w: b.readUInt16BE(i + 7), h: b.readUInt16BE(i + 5) };
+    i += 2 + b.readUInt16BE(i + 2);
+  }
+  throw new Error('unknown image size ' + file);
+}
+const LOGO_RATIO = pngRatio('onDark'); // lockup: mark + FootureX (brandbook page header)
+const HERO_RATIO = pngRatio('hero');   // two-tone wordmark (brandbook cover)
 
 // ---------------------------------------------------------------- icons
 const iconCache = new Map();
@@ -63,7 +84,7 @@ class Deck {
   // text box with automatic font choice; opts.display uses display fonts
   text(s, t, o = {}) {
     o = Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined));
-    const fontFace = o.fontFace || (o.display ? dispFont(t) : bodyFont(t));
+    const fontFace = safeFont(o.fontFace || (o.display ? dispFont(t) : bodyFont(t)), t);
     const size = o.fontSize || 14;
     if (o.w && o.h && typeof t === 'string' && !o.noFit) {
       const lines = estLines(t, o.w - (o.margin ? 0.1 : 0), size, fontFace);
@@ -72,7 +93,7 @@ class Deck {
     }
     const opts = { isTextBox: true, margin: 0, color: o.color || (this.dark ? C.text : C.lightText), valign: 'top', fit: 'none', ...o, fontFace, fontSize: size };
     delete opts.display; delete opts.noFit;
-    if (Array.isArray(t)) t = t.map((r) => (typeof r === 'string' ? { text: r } : { ...r, options: { fontFace: r.options?.fontFace || (r.options?.display ? dispFont(r.text) : bodyFont(r.text)), ...r.options } }));
+    if (Array.isArray(t)) t = t.map((r) => (typeof r === 'string' ? { text: r } : { ...r, options: { ...r.options, fontFace: safeFont(r.options?.fontFace || (r.options?.display ? dispFont(r.text) : bodyFont(r.text)), r.text) } }));
     s.addText(t, opts);
   }
 
@@ -83,7 +104,7 @@ class Deck {
     const s = this.pres.addSlide({ masterName: master, sectionTitle: this.section });
     s._fx = { n: this.n, dark: this.dark };
     if (o.pre) o.pre(s);
-    if (master === 'FX_FULL' && this.fullChrome) this.fullChrome(s);
+    if (master === 'FX_FULL' && this.fullChrome) this.fullChrome(s, o);
     if (o.title && master !== 'FX_COVER') {
       const words = o.title.split(' ');
       const cut = words.length > 1 ? words.length - 1 : 0;
@@ -109,7 +130,7 @@ class Deck {
 
   status(s, key) {
     const ST = {
-      ACT: ['ДЕЙСТВУЮЩЕЕ', C.accent], DEV: ['В РАЗРАБОТКЕ · FOUNDATION', C.accent2], PLAN: ['ПЛАН · ФАЗА 1', C.accent], CONCEPT: ['СТРАТЕГИЧЕСКАЯ КОНЦЕПЦИЯ', C.dot],
+      ACT: ['ДЕЙСТВУЮЩЕЕ', C.accent], DEV: ['ПРОЕКТ · ЭТАП FOUNDATION', C.accent2], PLAN: ['КОНЦЕПЦИЯ · ФАЗА 1', C.accent], CONCEPT: ['СТРАТЕГИЧЕСКАЯ КОНЦЕПЦИЯ', C.dot],
       AMB: ['ДОЛГОСРОЧНАЯ АМБИЦИЯ', C.muted], CALC: ['РАСЧЁТ ПО ДАННЫМ BX', C.dot], MARKET: ['РЫНОЧНЫЕ ДАННЫЕ · ИСТОЧНИКИ', C.accent],
       FRAME: ['УПРАВЛЕНЧЕСКАЯ МОДЕЛЬ · ПРОЕКТ', C.soft], VISION: ['ВИДЕНИЕ', C.accent], CONFIRM: ['ТРЕБУЕТСЯ ПОДТВЕРЖДЕНИЕ', C.dot],
       DOC: ['ДОКУМЕНТЫ BX', C.accent2], NODATA: ['ЦИФРЫ НЕ ПРЕДОСТАВЛЕНЫ', C.dot], BRAND: ['БРЕНДБУК V1.0', C.accent2],
@@ -123,8 +144,13 @@ class Deck {
     this.statusLog.push([this.n, label]);
   }
 
+  // short status line under the title (what kind of statement the slide makes)
+  tag(s, t, col) {
+    this.text(s, t, { x: M, y: 1.66, w: 11.5, h: 0.28, fontSize: 9.5, bold: true, color: col || C.dot, charSpacing: 0.5 });
+  }
+
   source(s, t) {
-    this.text(s, t, { x: M, y: 6.5, w: 9.6, h: 0.42, fontSize: 8.5, color: C.muted, italic: false, valign: 'bottom', noFit: true, objectName: 'source' });
+    this.text(s, t, { x: M, y: 6.5, w: 9.6, h: 0.42, fontSize: 9, color: C.muted, italic: false, valign: 'bottom', noFit: true, objectName: 'source' });
     this.sourcesLog.push([this.n, t]);
   }
 
@@ -134,7 +160,7 @@ class Deck {
       x, y, w, h, rectRadius: o.r ?? 0.12,
       fill: { color: o.fill || (C.surface), transparency: o.transparency || 0 },
       line: { color: o.line || (C.line), width: o.lineW ?? 0.75 },
-      shadow: o.shadow === false || this.dark ? undefined : { type: 'outer', color: '9AA6BA', opacity: 0.18, blur: 8, offset: 2, angle: 90 },
+      
       objectName: o.name,
     });
   }
@@ -142,7 +168,7 @@ class Deck {
     const col = o.color || C.accent;
     s.addShape(this.pres.shapes.OVAL, { x, y, w: d, h: d, fill: { color: o.bg || C.outline }, line: { color: o.bg || C.outline, width: 0 }, objectName: o.name ? o.name + 'bg' : undefined });
     const pad = d * 0.24;
-    s.addImage({ data: await icon(name, col === C.accent && !this.dark ? '0E9F64' : col), x: x + pad, y: y + pad, w: d - 2 * pad, h: d - 2 * pad, objectName: o.name });
+    s.addImage({ data: await icon(name, col), x: x + pad, y: y + pad, w: d - 2 * pad, h: d - 2 * pad, objectName: o.name });
   }
   pill(s, t, x, y, o = {}) {
     const w = o.w || 0.3 + t.length * 0.075;
@@ -152,7 +178,12 @@ class Deck {
     return w;
   }
   caption(s, t = 'Концептуальная визуализация', x = W - M - 3.2, y = 6.74, o = {}) {
-    this.text(s, t, { x, y, w: o.w || 3.2, h: 0.24, fontSize: 8.5, color: o.color || C.muted, align: o.align || 'right', italic: true, valign: 'bottom' });
+    if (o.backing) { // readable on busy imagery
+      const tw = Math.min(o.w || 3.2, 0.25 + t.length * 0.062);
+      const bx = (o.align || 'right') === 'right' ? x + (o.w || 3.2) - tw : x;
+      s.addShape(this.pres.shapes.ROUNDED_RECTANGLE, { x: bx - 0.04, y: y - 0.02, w: tw + 0.08, h: 0.28, rectRadius: 0.06, fill: { color: C.bg, transparency: 25 }, line: { color: C.bg, width: 0 } });
+    }
+    this.text(s, t, { x, y, w: o.w || 3.2, h: 0.24, fontSize: 9, color: o.color || C.muted, align: o.align || 'right', italic: true, valign: 'bottom' });
   }
   bg(s, img = 'renders/bg-dark.jpg') {
     s.addImage({ path: ASSET(img), x: 0, y: 0, w: W, h: H });
@@ -161,26 +192,34 @@ class Deck {
     const sc = o.scale || 1;
     const w = W * sc, h = H * sc;
     s.addImage({ path: ASSET(img), x: (W - w) / 2 + (o.dx || 0), y: (H - h) / 2 + (o.dy || 0), w, h, objectName: o.name || '!!render' });
+    // camera-path flythrough video on top of the still (the still is the video's last frame, so Morph continues from it)
+    if (o.video && !(fs.existsSync(ASSET(`video/${o.video}-flythrough-poster.png`)) && fs.existsSync(ASSET(`video/${o.video}-flythrough.mp4`)))) warnings.push(`video ${o.video} missing — run npm run video`);
+    else if (o.video) {
+      const poster = 'data:image/png;base64,' + fs.readFileSync(ASSET(`video/${o.video}-flythrough-poster.png`)).toString('base64');
+      s.addMedia({ type: 'video', path: ASSET(`video/${o.video}-flythrough.mp4`), cover: poster, x: 0, y: 0, w: W, h: H, objectName: 'flythrough' });
+    }
     if (o.overlay) for (const ov of [].concat(o.overlay)) s.addImage({ path: ASSET(`renders/ov-${ov}.png`), x: 0, y: 0, w: W, h: H, objectName: `ov-${ov}` });
   }
   // image cropped into a box (cover)
   boxImage(s, img, x, y, w, h, o = {}) {
-    const meta = o.meta || { w: 1920, h: 1080 };
-    s.addImage({ path: ASSET(img), x, y, w, h, sizing: { type: 'cover', w, h }, rounding: false, objectName: o.name });
+    // pptxgenjs 'cover' needs the image's own proportions in w/h and the frame in sizing; otherwise it stretches
+    const meta = o.meta || imgSize(ASSET(img));
+    s.addImage({ path: ASSET(img), x, y, w: h * meta.w / meta.h, h, sizing: { type: 'cover', w, h }, rounding: false, objectName: o.name });
     if (o.border !== false) s.addShape(this.pres.shapes.RECTANGLE, { x, y, w, h, fill: { type: 'none' }, line: { color: C.line, width: 0.75 } });
+    if (o.caption !== false) this.caption(s, o.caption || 'Концептуальная визуализация', x + w - 2.6, y + h - 0.3, { w: 2.5, backing: true });
   }
 
   bullets(s, items, x, y, w, h, o = {}) {
     const size = o.fontSize || 14;
     const runs = items.map((it, i) => {
       const t = typeof it === 'string' ? it : it.text;
-      const r = { text: t, options: { bullet: o.numbered ? { type: 'number' } : { code: '25A0', indent: 16 }, breakLine: i < items.length - 1, paraSpaceAfter: o.gap ?? 7, color: o.color || (this.dark ? 'D3D9E5' : 'D3D9E5'), fontFace: bodyFont(t) } };
+      const r = { text: t, options: { bullet: o.numbered ? { type: 'number' } : { code: '25A0', indent: 16 }, breakLine: i < items.length - 1, paraSpaceAfter: o.gap ?? 7, color: o.color || (this.dark ? 'B8C1D4' : 'B8C1D4'), fontFace: bodyFont(t) } };
       return r;
     });
     const est = items.reduce((sum, it) => sum + estLines(typeof it === 'string' ? it : it.text, w - 0.3, size, F.bodyCyrillic), 0);
     const need = (est * size * 1.2 + items.length * (o.gap ?? 7)) / 72;
     if (need > h + 0.05) warnings.push(`slide ${this.n}: bullets may overflow (${need.toFixed(2)} > ${h})`);
-    s.addText(runs, { x, y, w, h, fontSize: size, valign: 'top', margin: 0, isTextBox: true, color: o.color || (this.dark ? 'D3D9E5' : 'D3D9E5'), objectName: o.name, fit: 'none' });
+    s.addText(runs, { x, y, w, h, fontSize: size, valign: 'top', margin: 0, isTextBox: true, color: o.color || (this.dark ? 'B8C1D4' : 'B8C1D4'), objectName: o.name, fit: 'none' });
   }
 
   // ---------------------------------------------------------------- composite blocks
@@ -209,7 +248,7 @@ class Deck {
         ty += th + 0.08;
       }
       if (it.text) this.text(s, it.text, { x: x + pad, y: ty, w: cw - 2 * pad, h: y + ch - ty - (it.tag ? 0.5 : 0.18), fontSize: o.textSize || 12.5, color: this.dark ? C.soft : C.soft, lineSpacingMultiple: 1.1, objectName: a + 'd' });
-      if (it.tag) this.pill(s, it.tag, x + pad, y + ch - 0.48, { color: it.tagColor || C.accent, fontSize: 8.5, h: 0.27 });
+      if (it.tag) this.pill(s, it.tag, x + pad, y + ch - 0.48, { color: it.tagColor || C.accent, fontSize: 9, h: 0.27 });
       this.anim[this.n] = (this.anim[this.n] || 0) + 1;
     }
   }
@@ -227,7 +266,7 @@ class Deck {
       while (vs > 16 && estLines(it.value, (cw - 0.5) * 0.92, vs, vf) > 1) vs -= 2;
       this.text(s, it.value, { x: x + 0.25, y: y + 0.22, w: cw - 0.5, h: 0.75, fontSize: vs, fontFace: isCyr(it.value) ? F.displayCyrillic : F.displayLatin, color: it.color || C.accent, valign: 'middle', objectName: a + 'v' });
       this.text(s, it.label, { x: x + 0.25, y: y + 1.02, w: cw - 0.5, h: h - 1.2, fontSize: o.labelSize || 12.5, color: C.soft, objectName: a + 'l' });
-      if (it.sub) this.text(s, it.sub, { x: x + 0.25, y: y + h - 0.36, w: cw - 0.5, h: 0.26, fontSize: 8.5, color: C.muted, valign: 'bottom', objectName: a + 's' });
+      if (it.sub) this.text(s, it.sub, { x: x + 0.25, y: y + h - 0.36, w: cw - 0.5, h: 0.26, fontSize: 9, color: C.muted, valign: 'bottom', objectName: a + 's' });
     });
   }
 
@@ -259,8 +298,8 @@ class Deck {
         text: c.text,
         options: {
           fontFace: bodyFont(c.text), fontSize: isH ? (o.hSize || 11) : (o.size || 11.5), bold: isH || c.bold || (o.boldFirstCol && ci === 0),
-          color: c.color || (isH ? 'FFFFFF' : 'D3D9E5'),
-          fill: { color: c.fill || (isH ? hdrFill : (ri % 2 ? C.surface : '0B1220')) },
+          color: c.color || (isH ? 'FFFFFF' : 'B8C1D4'),
+          fill: { color: c.fill || (isH ? hdrFill : (ri % 2 ? C.surface : '0B0F0E')) },
           align: c.align || (ci === 0 ? 'left' : o.align || 'left'), valign: 'middle', margin: [3, 6, 3, 6],
         },
       };
@@ -297,7 +336,7 @@ class Deck {
     const cx = o.cx ?? W / 2, cy = o.cy ?? 4.35, rx = o.rx ?? 4.6, ry = o.ry ?? 2.05;
     const nw = o.nw ?? 2.35, nh = o.nh ?? 0.62;
     s.addShape(this.pres.shapes.OVAL, { x: cx - rx, y: cy - ry, w: rx * 2, h: ry * 2, fill: { type: 'none' }, line: { color: C.line, width: 1, dashType: 'dash' } });
-    s.addShape(this.pres.shapes.OVAL, { x: cx - rx * 0.55, y: cy - ry * 0.55, w: rx * 1.1, h: ry * 1.1, fill: { type: 'none' }, line: { color: '18243A', width: 0.75 } });
+    s.addShape(this.pres.shapes.OVAL, { x: cx - rx * 0.55, y: cy - ry * 0.55, w: rx * 1.1, h: ry * 1.1, fill: { type: 'none' }, line: { color: '273B51', width: 0.75 } });
     nodes.forEach((nd, i) => {
       const ang = -Math.PI / 2 + (i / nodes.length) * Math.PI * 2;
       const x = cx + Math.cos(ang) * rx, y = cy + Math.sin(ang) * ry;
@@ -305,9 +344,9 @@ class Deck {
     });
     const cw = o.cw ?? 2.6, chh = o.ch ?? 1.0;
     s.addShape(this.pres.shapes.ROUNDED_RECTANGLE, { x: cx - cw / 2, y: cy - chh / 2, w: cw, h: chh, rectRadius: 0.5, fill: { color: C.outline }, line: { color: C.accent2, width: 1.5 }, objectName: '!!hubcore' });
-    const lg = logoPath(true);
-    s.addImage({ path: lg.path, x: cx - 0.95, y: cy - 0.3, w: 1.9, h: 1.9 / LOGO_RATIO, objectName: '!!hublogo' });
-    this.text(s, center, { x: cx - cw / 2, y: cy + 0.06, w: cw, h: 0.3, fontSize: 9.5, color: C.accent, align: 'center', bold: true });
+    // brand mark only (no lockup + descriptor combination, which the brandbook does not define)
+    s.addImage({ path: logoPath('mark').path, x: cx - 0.24, y: cy - chh / 2 + 0.12, w: 0.48, h: 0.48, objectName: '!!hublogo' });
+    this.text(s, center, { x: cx - cw / 2 + 0.1, y: cy + chh / 2 - 0.4, w: cw - 0.2, h: 0.3, fontSize: 10.5, color: C.text, align: 'center', bold: true, charSpacing: 1 });
     for (let i = 0; i < nodes.length; i++) {
       const nd = nodes[i];
       const ang = -Math.PI / 2 + (i / nodes.length) * Math.PI * 2;
@@ -316,7 +355,7 @@ class Deck {
       s.addShape(this.pres.shapes.ROUNDED_RECTANGLE, { x: x - nw / 2, y: y - nh / 2, w: nw, h: nh, rectRadius: 0.12, fill: { color: C.surface }, line: { color: nd.color || (C.line), width: 1 }, objectName: a + 'n' });
       if (nd.icon) s.addImage({ data: await icon(nd.icon, nd.color || C.accent), x: x - nw / 2 + 0.14, y: y - 0.16, w: 0.32, h: 0.32, objectName: a + 'i' });
       this.text(s, nd.title, { x: x - nw / 2 + (nd.icon ? 0.54 : 0.15), y: y - nh / 2 + 0.06, w: nw - (nd.icon ? 0.64 : 0.3), h: nd.sub ? 0.28 : nh - 0.12, fontSize: o.fs || 11, bold: true, valign: nd.sub ? 'bottom' : 'middle', objectName: a + 't' });
-      if (nd.sub) this.text(s, nd.sub, { x: x - nw / 2 + (nd.icon ? 0.54 : 0.15), y: y + 0.0, w: nw - (nd.icon ? 0.64 : 0.3), h: 0.24, fontSize: 9, color: nd.subColor || C.muted, objectName: a + 's' });
+      if (nd.sub) this.text(s, nd.sub, { x: x - nw / 2 + (nd.icon ? 0.54 : 0.15), y: y + 0.0, w: nw - (nd.icon ? 0.64 : 0.3), h: 0.24, fontSize: 9.5, color: nd.subColor || C.soft, objectName: a + 's' });
     }
   }
 
@@ -332,8 +371,8 @@ class Deck {
       const n = L.items.length; const iw = (w - lw - 0.3 - 0.12 * (n - 1) - 0.1) / n;
       L.items.forEach((t, j) => {
         const ix = x + lw + 0.3 + j * (iw + 0.12);
-        s.addShape(this.pres.shapes.ROUNDED_RECTANGLE, { x: ix, y: y + 0.14, w: iw, h: lh - 0.28, rectRadius: 0.07, fill: { color: '0B1220' }, line: { color: C.line, width: 0.5 } });
-        this.text(s, t, { x: ix + 0.08, y: y + 0.14, w: iw - 0.16, h: lh - 0.28, fontSize: o.itemSize || 11, align: 'center', valign: 'middle', color: this.dark ? 'D3D9E5' : 'D3D9E5' });
+        s.addShape(this.pres.shapes.ROUNDED_RECTANGLE, { x: ix, y: y + 0.14, w: iw, h: lh - 0.28, rectRadius: 0.07, fill: { color: '0B0F0E' }, line: { color: C.line, width: 0.5 } });
+        this.text(s, t, { x: ix + 0.08, y: y + 0.14, w: iw - 0.16, h: lh - 0.28, fontSize: o.itemSize || 11, align: 'center', valign: 'middle', color: this.dark ? 'B8C1D4' : 'B8C1D4' });
       });
     });
   }
@@ -357,15 +396,15 @@ class Deck {
   // native chart wrapper with brand styling
   chart(s, type, data, o = {}) {
     const dark = this.dark;
-    const axis = dark ? '8D99AE' : '5B6578';
+    const axis = dark ? '8A93A6' : '5B6578';
     const base = {
       x: o.x ?? M, y: o.y ?? 2.0, w: o.w ?? 7.6, h: o.h ?? 4.5,
       chartColors: o.colors || (data.length === 1 && type !== 'doughnut' && type !== 'pie' ? [C.accent2] : [C.accent2, C.accent, C.dot, C.soft, C.line, C.kit]),
       catAxisLabelColor: axis, valAxisLabelColor: axis, catAxisLabelFontFace: '+mn-lt', valAxisLabelFontFace: '+mn-lt', catAxisLabelFontSize: 10, valAxisLabelFontSize: 10,
-      valGridLine: { color: '1A2A40', size: 0.5 }, catGridLine: { style: 'none' },
+      valGridLine: { color: '273B51', size: 0.5 }, catGridLine: { style: 'none' },
       catAxisLineShow: false, valAxisLineShow: false,
       showLegend: o.legend ?? data.length > 1, legendPos: 'b', legendFontFace: '+mn-lt', legendFontSize: 10, legendColor: axis,
-      showValue: o.showValue ?? true, dataLabelColor: dark ? 'E6ECF5' : 'D3D9E5', dataLabelFontSize: 9, dataLabelFontFace: '+mn-lt',
+      showValue: o.showValue ?? true, dataLabelColor: dark ? 'FFFFFF' : 'B8C1D4', dataLabelFontSize: 9, dataLabelFontFace: '+mn-lt',
       dataLabelPosition: o.labelPos, dataLabelFormatCode: o.fmt || '0',
       valAxisLabelFormatCode: o.axisFmt || '0', valAxisMajorUnit: o.majorUnit,
       showTitle: !!o.title, title: o.title, titleColor: dark ? C.text : C.lightText, titleFontFace: '+mn-lt', titleFontSize: 12,
@@ -388,8 +427,9 @@ class Deck {
     s.addImage({ path: ASSET(`ui/${img}.png`), x, y, w, h, objectName: name });
     return w;
   }
-  deskImg(s, img, x, y, w, name, ratio = 900 / 1440) {
-    s.addImage({ path: ASSET(`ui/${img}.png`), x, y, w, h: w * ratio, objectName: name });
+  deskImg(s, img, x, y, w, name) {
+    const m = imgSize(ASSET(`ui/${img}.png`)); // proportions from the rendered PNG itself
+    s.addImage({ path: ASSET(`ui/${img}.png`), x, y, w, h: w * m.h / m.w, objectName: name });
   }
 }
 

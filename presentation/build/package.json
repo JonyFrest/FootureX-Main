@@ -8,7 +8,8 @@
     "ui": "node ui.js",
     "model": "node finmodel.js",
     "deck": "node build.js",
-    "build": "node finmodel.js && node build.js"
+    "build": "node finmodel.js && node build.js",
+    "video": "node flythrough.js stadium facade,aerial,context 14 && node flythrough.js city wide,campus,boulevard,residential,phases,plan 24"
   },
   "keywords": [],
   "author": "",

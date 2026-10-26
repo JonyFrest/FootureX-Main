@@ -9,8 +9,8 @@ function place(m, pos, rot) { m.position.copy(pos); if (rot) m.rotation.set(...r
 function pitchTexture() {
   const c = document.createElement('canvas'); c.width = 1200; c.height = 800;
   const g = c.getContext('2d');
-  for (let i = 0; i < 16; i++) { g.fillStyle = i % 2 ? '#0e4a31' : '#0b3f2a'; g.fillRect(i * 75, 0, 75, 800); }
-  g.strokeStyle = 'rgba(235,245,255,0.85)'; g.lineWidth = 4;
+  for (let i = 0; i < 16; i++) { g.fillStyle = i % 2 ? '#13285e' : '#0f2150'; g.fillRect(i * 75, 0, 75, 800); }
+  g.strokeStyle = 'rgba(142,180,255,0.9)'; g.lineWidth = 4;
   const X = (m) => 600 + m * 10, Y = (m) => 400 + m * 10;
   g.strokeRect(X(-52.5), Y(-34), 1050, 680);
   g.beginPath(); g.moveTo(X(0), Y(-34)); g.lineTo(X(0), Y(34)); g.stroke();
@@ -65,11 +65,11 @@ export function stadium(o = {}) {
     const rib = new THREE.Mesh(new THREE.BoxGeometry(len, 1.2, 1.4), ribMat);
     rib.position.copy(a).add(b).multiplyScalar(0.5); rib.lookAt(b); rib.rotateY(Math.PI / 2); G.add(rib);
   }
-  G.add(new THREE.Mesh(ringGeom(76, 58, 52.4, 78, 60, 52.2), glow(0xfff1d6, o.floodI ?? 2.4)));
+  G.add(new THREE.Mesh(ringGeom(76, 58, 52.4, 78, 60, 52.2), glow(0xe8f0ff, o.floodI ?? 2.4)));
   G.add(new THREE.Line(ringLine(130, 112, 49.6), lineMat(PAL.accent, 0.9)));
 
   if (o.lit !== false) {
-    const p = new THREE.PointLight(0xfff3dd, o.pitchLight ?? 7000, 160, 1.8); p.position.set(0, 70, 0); G.add(p);
+    const p = new THREE.PointLight(0xe3ecff, o.pitchLight ?? 7000, 160, 1.8); p.position.set(0, 70, 0); G.add(p);
   }
   G.userData.labels = {
     pitch: V(0, 0, 0), lower: V(0, 9, 58), upper: V(0, 32, 92), roof: V(-60, 52, -70), facade: V(0, 25, 108), ribbon: V(-88, 18, 0),
@@ -120,7 +120,7 @@ export function city(mode = 'normal') {
     for (const side of [-1, 1]) {
       const h = 10 + rnd() * 14; const b = building(58, h, 30, { color: 0x1e283a, edge: edgeFor(3), edgeOpacity: mode === 'phases' ? 0.6 : 0.25, lit: 1.3, roofGlow: roofFor(3), roofGlowI: RG });
       b.position.x = x; b.position.z = side * 48; G.add(b);
-      const canopy = new THREE.Mesh(new THREE.BoxGeometry(58, 0.6, 6), glow(0xffd9a8, 0.9)); canopy.position.set(x, 5, side * 31); G.add(canopy);
+      const canopy = new THREE.Mesh(new THREE.BoxGeometry(58, 0.6, 6), glow(0xb8c1d4, 0.9)); canopy.position.set(x, 5, side * 31); G.add(canopy);
     }
   }
   // residential perimeter blocks (phase 3) south
@@ -134,7 +134,7 @@ export function city(mode = 'normal') {
     for (let i = 0; i < 4; i++) { const t = tree(0.9); t.position.set(bx - 25 + rnd() * 50, 0, bz - 18 + rnd() * 36); G.add(t); }
   }
   // central park
-  const park = new THREE.Mesh(new THREE.BoxGeometry(380, 0.6, 300), std(0x0d2a20, 0.95)); park.position.set(-125, 0.3, 255); park.receiveShadow = true; G.add(park);
+  const park = new THREE.Mesh(new THREE.BoxGeometry(380, 0.6, 300), std(0x101f3d, 0.95)); park.position.set(-125, 0.3, 255); park.receiveShadow = true; G.add(park);
   const pond = new THREE.Mesh(new THREE.CircleGeometry(55, 48), new THREE.MeshPhysicalMaterial({ color: 0x0b2440, roughness: 0.05, metalness: 0.4 })); pond.rotation.x = -Math.PI / 2; pond.position.set(-100, 0.7, 270); G.add(pond);
   for (let i = 0; i < 140; i++) { const t = tree(0.8 + rnd() * 0.6); const x = -300 + rnd() * 350, z = 120 + rnd() * 270; if (Math.hypot(x + 100, z - 270) < 62) continue; t.position.set(x, 0, z); G.add(t); }
   // education & academy campus (phase 1) east
@@ -145,7 +145,7 @@ export function city(mode = 'normal') {
   // sports centre + training pitches (phase 2) west
   const sc = building(120, 20, 70, { color: 0x1a2436, edge: edgeFor(2), edgeOpacity: mode === 'phases' ? 0.65 : 0.25, roofGlow: roofFor(2) ?? 0x9fc3ff, roofGlowI: 0.6 }); sc.position.set(-620, 0, 170); G.add(sc);
   for (const [x, z] of [[-700, 300], [-560, 300]]) {
-    const p = new THREE.Mesh(new THREE.PlaneGeometry(105, 68), new THREE.MeshStandardMaterial({ color: 0x0e4a31, roughness: 0.9 })); p.rotation.x = -Math.PI / 2; p.position.set(x, 0.6, z); G.add(p);
+    const p = new THREE.Mesh(new THREE.PlaneGeometry(105, 68), new THREE.MeshStandardMaterial({ color: 0x13285e, roughness: 0.9 })); p.rotation.x = -Math.PI / 2; p.position.set(x, 0.6, z); G.add(p);
     const l = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(100, 64)), lineMat(0xe8f0ff, 0.6)); l.rotation.x = -Math.PI / 2; l.position.set(x, 0.8, z); G.add(l);
   }
   // north mixed-use towers behind canal
@@ -285,14 +285,14 @@ export function arena() {
 export function academy() {
   reseed(31);
   const G = new THREE.Group();
-  const pitchMat = new THREE.MeshStandardMaterial({ color: 0x0e4a31, roughness: 0.9 });
+  const pitchMat = new THREE.MeshStandardMaterial({ color: 0x13285e, roughness: 0.9 });
   const pitches = [[-80, -40], [40, -40], [-80, 50], [40, 50]];
   for (const [x, z] of pitches) {
     const p = new THREE.Mesh(new THREE.PlaneGeometry(105, 68), pitchMat); p.rotation.x = -Math.PI / 2; p.position.set(x, 0.3, z); p.receiveShadow = true; G.add(p);
     const l = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.PlaneGeometry(100, 64)), lineMat(0xeaf2ff, 0.8)); l.rotation.x = -Math.PI / 2; l.position.set(x, 0.5, z); G.add(l);
     const c = new THREE.Line(new THREE.BufferGeometry().setFromPoints(Array.from({ length: 65 }, (_, i) => V(Math.cos(i / 64 * Math.PI * 2) * 9.15 + x, 0.5, Math.sin(i / 64 * Math.PI * 2) * 9.15 + z))), lineMat(0xeaf2ff, 0.8)); G.add(c);
     const mid = new THREE.Line(new THREE.BufferGeometry().setFromPoints([V(x, 0.5, z - 32), V(x, 0.5, z + 32)]), lineMat(0xeaf2ff, 0.8)); G.add(mid);
-    for (const s of [-1, 1]) for (const k of [-1, 1]) { const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.5, 26, 6), std(0x3a465a, 0.4, 0.8)); pole.position.set(x + s * 55, 13, z + k * 36); G.add(pole); const lamp = new THREE.Mesh(new THREE.BoxGeometry(4, 2, 1), glow(0xfff1d6, 3)); lamp.position.set(x + s * 55, 26, z + k * 36); G.add(lamp); }
+    for (const s of [-1, 1]) for (const k of [-1, 1]) { const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.5, 26, 6), std(0x3a465a, 0.4, 0.8)); pole.position.set(x + s * 55, 13, z + k * 36); G.add(pole); const lamp = new THREE.Mesh(new THREE.BoxGeometry(4, 2, 1), glow(0xe8f0ff, 3)); lamp.position.set(x + s * 55, 26, z + k * 36); G.add(lamp); }
   }
   // indoor dome
   const dome = new THREE.Mesh(new THREE.CylinderGeometry(40, 40, 110, 32, 1, false, 0, Math.PI), new THREE.MeshPhysicalMaterial({ color: 0x1b2a44, roughness: 0.25, metalness: 0.5, side: THREE.DoubleSide }));
@@ -356,12 +356,12 @@ export const SCENES = {
       // context plaza + approach
       const plaza = new THREE.Mesh(new THREE.RingGeometry(140, 230, 96), std(0x111a28, 0.7, 0.2)); plaza.rotation.x = -Math.PI / 2; plaza.position.y = 0.1; plaza.scale.set(1.05, 0.9, 1); scene.add(plaza);
       for (let i = 0; i < 80; i++) { const a = (i / 80) * Math.PI * 2; const t = tree(1.1); t.position.set(Math.cos(a) * 205, 0, Math.sin(a) * 180); scene.add(t); }
-      for (let i = 0; i < 36; i++) { const a = (i / 36) * Math.PI * 2; const lamp = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 8, 6), glow(0xffe2b8, 2)); lamp.position.set(Math.cos(a) * 160, 4, Math.sin(a) * 140); scene.add(lamp); }
+      for (let i = 0; i < 36; i++) { const a = (i / 36) * Math.PI * 2; const lamp = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 8, 6), glow(0xcfe0ff, 2)); lamp.position.set(Math.cos(a) * 160, 4, Math.sin(a) * 140); scene.add(lamp); }
       // surrounding blocks (context)
       reseed(3); for (let i = 0; i < 46; i++) { const a = rnd() * Math.PI * 2, r = 330 + rnd() * 420; const b = building(40 + rnd() * 50, 20 + rnd() * 70, 30 + rnd() * 40, { edgeOpacity: 0.18, lit: 0.6 }); b.position.x = Math.cos(a) * r; b.position.z = Math.sin(a) * r; scene.add(b); }
       return { labels: s.userData.labels, cameras: {
         aerial: { pos: [330, 260, 380], target: [0, 10, 0], fov: 34 },
-        context: { pos: [-700, 620, 760], target: [0, 0, 0], fov: 38 },
+        context: { pos: [-700, 620, 760], target: [0, 0, 0], fov: 38, exposure: 1.7 },
         facade: { pos: [190, 18, 260], target: [0, 32, 0], fov: 46 },
         interior: { pos: [-40, 9, 52], target: [20, 18, -40], fov: 62 },
         top: { pos: [0, 640, 40], target: [0, 0, 0], fov: 38 },
@@ -383,7 +383,7 @@ export const SCENES = {
     } },
   ai: { opts: { fov: 35, fog: false, bloomStrength: 0.5, bloomThreshold: 0.75, bloomRadius: 0.3, bgTop: '#0e1a3a', bgBottom: '#0b0f0e' }, async build(st) {
       const { scene } = st; lights(scene, { sun: 0.8 }); scene.add(aiNetwork()); scene.add(particles(1200, 26, -10, 10, 0x7fa8ff, 0.03, 0.6));
-      return { cameras: { wide: { pos: [5.6, 2.2, 9.5], target: [1.6, 0, 0], fov: 38 }, close: { pos: [2.6, 1.0, 4.6], target: [0, 0, 0], fov: 45 } } };
+      return { cameras: { wide: { pos: [5.6, 2.2, 9.5], target: [1.6, 0, 0], fov: 38, exposure: 1.5 }, close: { pos: [2.6, 1.0, 4.6], target: [0, 0, 0], fov: 45 } } };
     } },
   datacenter: { opts: { fov: 40, fogDensity: 0.03, bloomStrength: 0.8, bloomThreshold: 0.65 }, async build(st) {
       const { scene } = st; lights(scene, { sun: 0.6, shadowSize: 20, sunPos: [-10, 20, 10] }); ground(scene, 120, { cell: 1, gridOpacity: 0.45, gridColor: 0x1b3550 }); scene.add(dataCenter());

@@ -182,7 +182,7 @@
   "days": 14,
   "levels": 100,
   "perDay": 0.28500000000000003,
-  "seasonsPerYear": 26.071428571428573,
-  "maxPerYear": 104.025
+  "seasonsPerYear": 26,
+  "maxPerYear": 103.74000000000001
  }
 }

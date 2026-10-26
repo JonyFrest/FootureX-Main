@@ -5,7 +5,7 @@ function node(d, s, x, y, w, h, t, sub, o = {}) {
   s.addShape(d.pres.shapes.ROUNDED_RECTANGLE, { x, y, w, h, rectRadius: 0.08, fill: { color: o.fill || C.surface }, line: { color: o.line || C.line, width: o.lw || 1 }, objectName: o.name });
   const th = sub ? 0.27 : h - 0.12, ty = sub ? y + (h - 0.5) / 2 : y + 0.06;
   d.text(s, t, { x: x + 0.08, y: ty, w: w - 0.16, h: th, fontSize: o.fs || 11, bold: true, align: 'center', valign: sub ? 'top' : 'middle', color: o.color || C.text });
-  if (sub) d.text(s, sub, { x: x + 0.08, y: ty + 0.28, w: w - 0.16, h: 0.22, fontSize: o.sfs || 8.5, align: 'center', valign: 'top', color: o.subColor || '8A93A6' });
+  if (sub) d.text(s, sub, { x: x + 0.08, y: ty + 0.28, w: w - 0.16, h: 0.22, fontSize: o.sfs || 9.5, align: 'center', valign: 'top', color: o.subColor || '8A93A6' });
 }
 const L = (d, s, x, y, w, h) => d.pres && s.addShape(d.pres.shapes.LINE, { x, y, w, h, line: { color: '273B51', width: 1 } });
 
@@ -14,17 +14,17 @@ module.exports = async (d, pres) => {
   {
     const s = d.slide({
       title: 'Корпоративная структура FootureX Uzbekistan: целевая модель группы', status: 'FRAME',
-      notes: 'ТЕЗИС: сегодня все направления — подразделения одного юридического лица; выделение дочерних компаний происходит поэтапно, когда направление готово к собственным инвесторам, лицензиям или партнёрам.\nВАЖНО: схема концептуальная. Ни одно подразделение не является зарегистрированным юридическим лицом — документы не предоставлены.\nПоэтапное выделение (вариант): (1) все направления внутри MChJ; (2) отдельные ДК для AI SaaS и игрового IP — при привлечении профильных инвесторов; (3) FC FootureX и Football Academy — отдельные организации, если этого требуют правила клубного лицензирования; (4) проектные компании (SPV) для Stadium и City с партнёрами.\nСвязка: далее — модель управления.',
+      notes: 'ТЕЗИС: на старте все направления планируются как подразделения одного юридического лица (факт регистрации MChJ — требуется подтверждение); выделение дочерних компаний происходит поэтапно, когда направление готово к собственным инвесторам, лицензиям или партнёрам.\nВАЖНО: схема концептуальная. Ни одно подразделение не является зарегистрированным юридическим лицом — документы не предоставлены.\nПоэтапное выделение (вариант): (1) все направления внутри MChJ; (2) отдельные ДК для AI SaaS и игрового IP — при привлечении профильных инвесторов; (3) FC FootureX и Football Academy — отдельные организации, если этого требуют правила клубного лицензирования; (4) проектные компании (SPV) для Stadium и City с партнёрами.\nСвязка: далее — модель управления.',
     });
-    node(d, s, 4.97, 1.95, 3.4, 0.7, 'MChJ «FootureX Uzbekistan»', 'материнская компания', { name: 'a1_n', fill: '142A70', color: 'FFFFFF', line: '142A70', fs: 12, subColor: 'B8C1D4' });
+    node(d, s, 4.42, 1.95, 4.5, 0.7, 'MChJ «FootureX Uzbekistan»', 'материнская компания · регистрация — требует подтверждения', { name: 'a1_n', fill: '142A70', color: 'FFFFFF', line: '142A70', fs: 12, subColor: 'B8C1D4' });
     L(d, s, 6.67, 2.65, 0, 0.25); L(d, s, 2.05, 2.9, 9.25, 0);
-    const clusters = [['Digital', [['FootureX Technologies', 'подразделение → ДК'], ['FootureX AI', 'подразделение → ДК']]], ['Gaming', [['FootureX Game Development', 'подразделение → ДК (IP)'], ['FootureX Game Community', 'подразделение'], ['FootureX Esports', 'подразделение'], ['FootureX Game Dev Academy', 'подразделение → ДК']]], ['Sports', [['FC FootureX', 'отдельная организация*'], ['FootureX Football Academy', 'отдельная организация*']]], ['Infrastructure', [['FootureX Stadium', 'SPV с партнёрами'], ['FootureX City', 'SPV с партнёрами']]]];
+    const clusters = [['Digital & Education', [['FootureX Technologies', 'подразделение → ДК'], ['FootureX AI', 'подразделение → ДК'], ['FootureX Game Dev Academy', 'подразделение → ДК']]], ['Gaming', [['FootureX Game Development', 'студия · подразделение'], ['FootureX Game', 'IP · подразделение → ДК'], ['FootureX Game Community', 'подразделение'], ['FootureX Esports', 'подразделение']]], ['Sports', [['FC FootureX', 'отдельная организация*'], ['FootureX Football Academy', 'отдельная организация*']]], ['Infrastructure', [['FootureX Stadium', 'SPV с партнёрами'], ['FootureX City', 'SPV с партнёрами']]]];
     clusters.forEach(([cl, units], i) => {
       const cx = 2.05 + i * 3.083, x = cx - 1.45;
       L(d, s, cx, 2.9, 0, 0.18);
       node(d, s, x, 3.08, 2.9, 0.45, cl, null, { name: `a${i + 2}_c`, fill: '142A70', line: '2550FA', color: '2593FA', fs: 12 });
       units.forEach(([u, st], j) => {
-        node(d, s, x, 3.68 + j * 0.68, 2.9, 0.6, u, st, { fs: 10.5, sfs: 8.5 });
+        node(d, s, x, 3.68 + j * 0.66, 2.9, 0.58, u, st, { fs: 10.5, sfs: 9.5 });
       });
     });
     d.text(s, '* Форма определяется требованиями клубного лицензирования. Все звенья — концептуальные; зарегистрированных дочерних компаний нет.', { x: M, y: 6.5, w: 12.1, h: 0.28, fontSize: 9.5, color: '8A93A6' });
@@ -70,7 +70,7 @@ module.exports = async (d, pres) => {
       ['Head of Security', 'Безопасность и антифрод', 'предусмотрена'],
     ], { x: M, y: 2.0, w: 7.2, colW: [1.9, 3.7, 1.6], rowH: 0.44, size: 10.5, hSize: 10, boldFirstCol: true });
     d.text(s, '«Предусмотрена» — роль заложена в BX-002; занятость позиции не подтверждена.', { x: M, y: 6.05, w: 7.2, h: 0.3, fontSize: 9.5, color: C.dot });
-    const dept = (y, t, items, a) => { d.card(s, 8.1, y, 4.63, 1.85, { name: a }); d.text(s, t, { x: 8.32, y: y + 0.13, w: 4.2, h: 0.3, fontSize: 12.5, bold: true, color: C.accent, fontFace: F.bodyLatin }); items.forEach((it, k) => d.pill(s, it, 8.32 + (k % 3) * 1.42, y + 0.6 + Math.floor(k / 3) * 0.48, { w: 1.34, h: 0.36, fontSize: 8.5, color: C.accent2 })); };
+    const dept = (y, t, items, a) => { d.card(s, 8.1, y, 4.63, 1.85, { name: a }); d.text(s, t, { x: 8.32, y: y + 0.13, w: 4.2, h: 0.3, fontSize: 12.5, bold: true, color: C.accent, fontFace: F.bodyLatin }); items.forEach((it, k) => d.pill(s, it, 8.32 + (k % 3) * 1.42, y + 0.6 + Math.floor(k / 3) * 0.48, { w: 1.34, h: 0.36, fontSize: 9, color: C.accent2 })); };
     dept(2.0, 'Product Department', ['Product Mgmt', 'Game Design', 'Architecture', 'UX', 'Economy'], 'a2_c');
     dept(4.0, 'Development Department', ['Backend', 'Frontend', 'Telegram', 'DevOps', 'QA', 'Security'], 'a3_c');
     d.text(s, 'Hybrid Product Structure: Product-driven · Service-oriented · LiveOps', { x: 8.1, y: 6.0, w: 4.63, h: 0.4, fontSize: 9.5, color: C.soft, fontFace: F.bodyLatin });
@@ -100,10 +100,10 @@ module.exports = async (d, pres) => {
       notes: 'ТЕЗИС: главные риски — не технологические, а риски фокуса и финансирования; для каждого есть конкретная мера.\nКарта: 1 — финансирование не привлечено в срок; 2 — слишком быстрый рост и распыление фокуса; 3 — низкое удержание; 4 — нарушение игровой экономики; 5 — агрессивная монетизация и потеря доверия; 6 — слабая инфраструктура (риски 2–6 перечислены в BX-008); 7 — регулирование платежей, Stars/TON и токенов; 8 — зависимость от Telegram; 9 — кибербезопасность и мошенничество; 10 — земля и разрешения для Stadium/City.\nДополнительно (вне карты): дефицит кадров, концентрация IT-клиентов, валютный риск UZS/USD.\nОценка вероятности и влияния — экспертная, пересматривается ежеквартально комитетом по рискам.\nСвязка: далее — roadmap на 10 лет.',
     });
     const gx = M + 0.55, gy = 2.05, cs = 1.38;
-    const heat = [['142A70', '1B3EE9', '2550FA'], ['111D3A', '142A70', '1B3EE9'], ['0E1629', '111D3A', '142A70']];
+    const heat = [['142A70', '1B3EE9', '2550FA'], ['0E1629', '142A70', '1B3EE9'], ['0E1629', '0E1629', '142A70']];
     for (let r = 0; r < 3; r++) for (let c = 0; c < 3; c++) s.addShape(pres.shapes.RECTANGLE, { x: gx + c * cs, y: gy + r * cs, w: cs - 0.04, h: cs - 0.04, fill: { color: heat[r][c] }, line: { color: 'FFFFFF', width: 0 } });
     d.text(s, 'Влияние →', { x: gx, y: gy + 3 * cs + 0.02, w: 3 * cs, h: 0.28, fontSize: 10, color: '8A93A6', align: 'center' });
-    d.text(s, 'Вероятность →', { x: M - 0.55, y: gy + 1.5 * cs - 0.14, w: 2.2, h: 0.28, fontSize: 10, color: '8A93A6', align: 'center', rotate: 270 });
+    d.text(s, 'Вероятность →', { x: M - 1.0, y: gy + 1.5 * cs - 0.14, w: 2.2, h: 0.28, fontSize: 10.5, color: C.soft, align: 'center', rotate: 270 });
     // [n, likelihood 0..2 (0 high), impact 0..2, dx, dy]
     const pts = [[1, 0, 2, 0.15, 0.15], [2, 0, 2, 0.75, 0.75], [3, 0, 1, 0.3, 0.3], [4, 1, 2, 0.2, 0.3], [5, 1, 1, 0.2, 0.2], [6, 1, 0, 0.6, 0.3], [7, 1, 1, 0.8, 0.8], [8, 2, 2, 0.45, 0.25], [9, 2, 1, 0.3, 0.5], [10, 0, 1, 0.85, 0.85]];
     pts.forEach(([n, lk, im, dx, dy], i) => {
@@ -117,7 +117,7 @@ module.exports = async (d, pres) => {
       ['2', 'Слишком быстрый рост, распыление фокуса', 'Фазы и ворота: новое — после метрик'],
       ['3', 'Низкое удержание (BX-008)', 'Тесты Foundation, LiveOps, A/B'],
       ['4', 'Нарушение игровой экономики (BX-008)', 'Контроль эмиссии, баланс sources/sinks'],
-      ['5', 'Агрессивная монетизация, потеря доверия', 'Без pay-to-win, лутбоксов и ставок'],
+      ['5', 'Агрессивная монетизация, потеря доверия', 'Ограничение pay-to-win; без нечестных лутбоксов и ставок'],
       ['6', 'Слабая инфраструктура (BX-008)', 'Архитектура BX-005, мониторинг'],
       ['7', 'Регулирование платежей, Stars/TON, токенов', 'Юридическое заключение до запуска'],
       ['8', 'Зависимость от Telegram', 'Веб-платформа BX-006, своя база'],
@@ -130,22 +130,31 @@ module.exports = async (d, pres) => {
   {
     const s = d.slide({
       title: 'Roadmap развития на 10 лет', status: 'AMB',
-      notes: 'ТЕЗИС: дорожная карта показывает последовательность — цифровые направления первыми, спорт и инфраструктура позже и при выполнении условий.\nЛегенда: сплошная полоса — планируемая реализация; светлая — подготовка (ТЭО, пилоты, партнёры). Годы отсчитываются от запуска операционной деятельности.\nВсе сроки — ориентиры, требуют утверждения.\nСвязка: далее — KPI и контроль исполнения.',
+      notes: 'ТЕЗИС: дорожная карта показывает последовательность — цифровые направления первыми, спорт и инфраструктура позже и при выполнении условий.\nСроки согласованы со слайдом 7 (горизонты): Г1–3 — фундамент (Technologies, AI, студия, FootureX Game с сообществом, пилот академии); Г4–6 — Esports и масштаб; Г7–10 — Football Academy, FC FootureX, ТЭО стадиона; City — подготовка не ранее Г9.\nFootureX Game: этапы BX-001 Foundation → Ecosystem Expansion; переход к росту — по условиям BX-008. Годы отсчитываются от запуска операционной деятельности; все сроки — ориентиры, требуют утверждения.\nСвязка: далее — KPI и контроль исполнения.',
     });
-    const rows = [['FootureX Technologies', 1, 10, 0, 0], ['FootureX AI', 1, 10, 0, 0], ['FootureX Game', 1, 10, 0, 0], ['Game Development (заказы)', 2, 10, 0, 0], ['Game Dev Academy', 1, 10, 0, 0], ['Community & Esports', 2, 10, 1, 1], ['Football Academy', 4, 10, 3, 3], ['FC FootureX', 5, 10, 4, 4], ['FootureX Stadium', 0, 0, 5, 10], ['FootureX City', 0, 0, 6, 10]];
-    const x0 = 3.6, yw = (W - M - x0) / 10, y0 = 2.35, rh = 0.4;
+    // [name, realise from, to, prepare from, to, kind]  kind: d = digital, s = sport, i = infrastructure
+    const rows = [['FootureX Technologies', 1, 10, 0, 0, 'd'], ['FootureX AI', 1, 10, 0, 0, 'd'], ['Game Development (студия)', 1, 10, 0, 0, 'd'], ['FootureX Game', 1, 10, 0, 0, 'd'],
+      ['Game Dev Academy', 1, 10, 0, 0, 'd'], ['Game Community', 1, 10, 0, 0, 'd'], ['FootureX Esports', 4, 10, 2, 3, 's'], ['Football Academy', 7, 10, 5, 6, 's'], ['FC FootureX', 8, 10, 6, 7, 's'],
+      ['FootureX Stadium', 0, 0, 7, 10, 'i'], ['FootureX City', 0, 0, 9, 10, 'i']];
+    const x0 = 3.65, yw = (W - M - x0) / 10, y0 = 2.32, rh = 0.355;
     for (let yv = 1; yv <= 10; yv++) {
-      d.text(s, 'Г' + yv, { x: x0 + (yv - 1) * yw, y: 2.0, w: yw, h: 0.28, fontSize: 10, bold: true, align: 'center', color: '8A93A6' });
-      s.addShape(pres.shapes.LINE, { x: x0 + (yv - 1) * yw, y: 2.3, w: 0, h: rows.length * rh + 0.1, line: { color: '273B51', width: 0.75 } });
+      d.text(s, 'Г' + yv, { x: x0 + (yv - 1) * yw, y: 1.98, w: yw, h: 0.28, fontSize: 10.5, bold: true, align: 'center', color: C.muted });
+      s.addShape(pres.shapes.LINE, { x: x0 + (yv - 1) * yw, y: 2.28, w: 0, h: rows.length * rh + 0.06, line: { color: C.line, width: 0.75 } });
     }
-    rows.forEach(([t, a, b, pa, pb], i) => {
-      const y = y0 + i * rh;
-      d.text(s, t, { x: M, y, w: 2.95, h: rh - 0.06, fontSize: 11, bold: true, valign: 'middle' });
-      const col = i < 5 ? '2593FA' : i < 8 ? C.accent2 : '8A93A6';
-      if (pa) s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: x0 + (pa - 1) * yw + 0.03, y: y + 0.06, w: (pb - pa + 1) * yw - 0.06, h: rh - 0.16, rectRadius: 0.06, fill: { color: col, transparency: 72 }, line: { color: col, width: 0.75, dashType: 'dash' }, objectName: `a${i + 1}_p` });
-      if (a) s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: x0 + (a - 1) * yw + 0.03, y: y + 0.06, w: (b - a + 1) * yw - 0.06, h: rh - 0.16, rectRadius: 0.06, fill: { color: col }, line: { color: col, width: 0 }, objectName: `a${i + 1}_b` });
+    const COL = { d: C.accent, s: C.accent2, i: C.muted };
+    rows.forEach(([t, a, b, pa, pb, k], i) => {
+      const y = y0 + i * rh, col = COL[k];
+      d.text(s, t, { x: M, y, w: 3.0, h: rh - 0.04, fontSize: 11, bold: true, valign: 'middle' });
+      if (pa) s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: x0 + (pa - 1) * yw + 0.03, y: y + 0.06, w: (pb - pa + 1) * yw - 0.06, h: rh - 0.14, rectRadius: 0.06, fill: { color: col, transparency: 75 }, line: { color: col, width: 0.75, dashType: 'dash' }, objectName: `a${i + 1}_p` });
+      if (a) s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: x0 + (a - 1) * yw + 0.03, y: y + 0.06, w: (b - a + 1) * yw - 0.06, h: rh - 0.14, rectRadius: 0.06, fill: { color: col }, line: { color: col, width: 0 }, objectName: `a${i + 1}_b` });
     });
-    d.text(s, 'Сплошная полоса — реализация · светлая — подготовка (пилоты, ТЭО, партнёры) · сроки ориентировочные', { x: M, y: 6.48, w: 12, h: 0.28, fontSize: 10, color: '8A93A6' });
+    // legend
+    const ly = 6.38;
+    [['Цифровые · реализация', C.accent, false], ['Спорт · реализация', C.accent2, false], ['Подготовка: пилоты, ТЭО', C.accent2, true], ['Stadium, City · подготовка', C.muted, true]].forEach(([t, col, dash], i) => {
+      const lx = M + i * 3.05;
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: lx, y: ly + 0.04, w: 0.42, h: 0.2, rectRadius: 0.05, fill: { color: col, transparency: dash ? 75 : 0 }, line: { color: col, width: 0.75, dashType: dash ? 'dash' : 'solid' } });
+      d.text(s, t, { x: lx + 0.52, y: ly, w: 2.5, h: 0.28, fontSize: 10, color: C.soft, valign: 'middle' });
+    });
   }
 
   // 113 — KPI & control
@@ -164,8 +173,11 @@ module.exports = async (d, pres) => {
       ['Technologies', 'Выручка, маржа, загрузка', 'Концепция', T, 'Ежемесячно'],
       ['AI', 'Проекты, клиенты подписки', 'Концепция', T, 'Ежемесячно'],
       ['Academy', 'Слушатели, трудоустройство', 'Концепция', T, 'Ежеквартально'],
-      ['Esports', 'Участники, просмотры, спонсоры', 'BX-001', T, 'Ежеквартально'],
+      ['Game Development', 'Проекты студии, клиенты', 'Концепция', T, 'Ежеквартально'],
+      ['Esports', 'Участники, просмотры, спонсоры', 'Концепция', T, 'Ежеквартально'],
+      ['FC FootureX', 'Лицензирование, состав', 'Концепция', T, 'Ежегодно'],
+      ['Football Academy', 'Воспитанники, программы', 'Концепция', T, 'Ежегодно'],
       ['Stadium / City', 'Этап подготовки', 'Глава IX', 'Опция A → B → C', 'Ежегодно'],
-    ], { y: 2.0, colW: [2.1, 3.5, 1.9, 2.8, 1.83], rowH: 0.48, size: 11, boldFirstCol: true });
+    ], { y: 1.98, colW: [2.45, 3.3, 1.8, 2.75, 1.83], rowH: 0.36, size: 10, boldFirstCol: true });
   }
 };

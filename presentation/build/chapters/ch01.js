@@ -7,14 +7,15 @@ module.exports = async (d, pres) => {
   {
     const s = d.slide({
       master: 'FX_COVER', logTitle: 'FootureX Uzbekistan — титульный слайд', kicker: false,
-      notes: 'ТЕЗИС: FootureX Uzbekistan — технологическая компания из Ташкента с долгосрочной стратегией экосистемы.\nПодача: открываем не игрой, а компанией. Подчеркнуть: документ — стратегическая презентация, статус «проект для обсуждения».\nСвязка: далее — корпоративное видение «Creating the Future».\nЛоготип и вордмарк — по FootureX Brand Book v1.0 (знак извлечён из брендбука).',
+      notes: 'ТЕЗИС: FootureX Uzbekistan — технологическая компания из Ташкента с долгосрочной стратегией экосистемы.\nПодача: открываем не игрой, а компанией. Подчеркнуть: документ — стратегическая презентация, статус «проект для обсуждения».\nСвязка: далее — корпоративное видение «Creating the Future».\nЗнак и вордмарк извлечены из FootureX Brand Book v1.0 без перерисовки; композиция — как на обложке брендбука.',
       pre: (s) => d.fullImage(s, 'renders/hero-cover.jpg', { overlay: 'left', name: '!!render' }),
     });
-    s.addImage({ path: logoPath('mark').path, x: M, y: 1.2, w: 0.75, h: 0.75, objectName: '!!mark' });
-    s.addImage({ path: logoPath('hero').path, x: M, y: 2.15, w: 5.6, h: 5.6 / HERO_RATIO, objectName: '!!logo' });
-    d.text(s, 'U Z B E K I S T A N', { x: M + 0.02, y: 2.95, w: 6, h: 0.4, fontSize: 18, fontFace: F.displayLatin, color: C.accent, objectName: '!!uz' });
-    d.text(s, 'Corporate Vision & Strategic Development', { x: M, y: 3.6, w: 7, h: 0.45, fontSize: 20, fontFace: F.bodyLatin, color: C.text });
-    d.text(s, 'Технологическая компания, создающая экосистему цифровых продуктов, искусственного интеллекта, игр, образования, киберспорта и спорта', { x: M, y: 4.15, w: 6.2, h: 0.95, fontSize: 14, color: 'B8C1D4', lineSpacingMultiple: 1.15 });
+    // brandbook cover: mark centred on the wordmark's axis, wordmark below; "Uzbekistan" stays outside the logo as a subtitle
+    const WM = 5.6, MK = 1.0;
+    s.addImage({ path: logoPath('mark').path, x: M + (WM - MK) / 2, y: 0.95, w: MK, h: MK, objectName: '!!mark' });
+    s.addImage({ path: logoPath('hero').path, x: M, y: 2.3, w: WM, h: WM / HERO_RATIO, objectName: '!!logo' });
+    d.text(s, 'Uzbekistan  ·  Corporate Vision & Strategic Development', { x: M, y: 3.42, w: 8.6, h: 0.4, fontSize: 15, fontFace: F.bodyLatin, color: C.text, charSpacing: 0.5, objectName: '!!uz' });
+    d.text(s, 'Технологическая компания, создающая экосистему цифровых продуктов, искусственного интеллекта, игр, образования, киберспорта и спорта', { x: M, y: 4.05, w: 6.2, h: 0.95, fontSize: 14, color: 'B8C1D4', lineSpacingMultiple: 1.15 });
     d.text(s, 'MChJ «FootureX Uzbekistan»  ·  FootureX Uzbekistan LLC  ·  Ташкент, Республика Узбекистан', { x: M, y: 5.55, w: 8, h: 0.3, fontSize: 11, color: 'B8C1D4' });
     d.text(s, 'Версия 1.0  ·  Октябрь 2026  ·  Проект для обсуждения  ·  Конфиденциально', { x: M, y: 5.9, w: 8, h: 0.3, fontSize: 10, color: '8A93A6' });
     d.caption(s, 'Концептуальная визуализация');
@@ -23,11 +24,11 @@ module.exports = async (d, pres) => {
   // 2 — Creating the Future
   {
     const s = renderPanel(d, {
-      img: 'renders/hero-close.jpg', side: 'left', title: 'Корпоративное видение', status: 'VISION', scale: 1.0, dx: 3.4,
+      img: 'renders/hero-close.jpg', side: 'left', title: 'Корпоративное видение', status: 'VISION', scale: 1.0, dx: 4.6,
       notes: 'ТЕЗИС: мы строим не продукт, а технологическую платформу роста, где каждое направление усиливает остальные.\nПодача: три опоры видения — технологии, игры и AI, спорт и городские инновации. Цифровые направления — фундамент ближайших лет; физическая инфраструктура — долгосрочная амбиция.\nСвязка: далее — откуда компания и почему Узбекистан.',
     });
     d.text(s, 'Creating the Future', { x: M, y: 2.0, w: 7, h: 0.75, fontSize: 34, fontFace: F.displayLatin, color: C.text, objectName: 'a1_big' });
-    d.text(s, 'Мы строим технологическую компанию, которая соединяет программное обеспечение, искусственный интеллект, игры, образование и спорт в единую экосистему — из Ташкента для региона и мира.', { x: M, y: 2.95, w: 5.9, h: 1.3, fontSize: 15.5, color: 'E6ECF5', lineSpacingMultiple: 1.15, objectName: 'a2_lead' });
+    d.text(s, 'Мы строим технологическую компанию, которая соединяет программное обеспечение, искусственный интеллект, игры, образование и спорт в единую экосистему — из Ташкента для региона и мира.', { x: M, y: 2.95, w: 5.9, h: 1.3, fontSize: 15.5, color: 'FFFFFF', lineSpacingMultiple: 1.15, objectName: 'a2_lead' });
     const pillars = [['Technology', 'Софт, автоматизация, облако'], ['Gaming & AI', 'Игры, AI-агенты, сообщество'], ['Sports & Urban', 'Футбол, стадион, городская среда']];
     pillars.forEach(([t, x2], i) => {
       const x = M + i * 2.0, y = 4.6;
@@ -45,7 +46,6 @@ module.exports = async (d, pres) => {
       caption: '3D-карта: Natural Earth · схематично',
       notes: 'ТЕЗИС: Узбекистан — крупнейший по населению рынок Центральной Азии с молодым, цифровым и быстро растущим обществом; Ташкент — естественный хаб.\nДанные: население 38,24 млн на 01.01.2026 (+1,8% за год); средний возраст 29,5 года; интернет-пользователи 33,1 млн, проникновение 89,0% (конец 2025); рост ВВП 7,7% в 2025 г., ВВП свыше $145 млрд.\nСвязка: далее — кто мы.',
     });
-    const L = d.constructor ? null : null;
     d.text(s, 'Ташкент', { x: 7.35, y: 2.0, w: 5.4, h: 0.6, fontSize: 30, color: C.text, display: true });
     d.text(s, 'Столица и крупнейший деловой центр Центральной Азии. Отсюда FootureX планирует выход на рынки региона.', { x: 7.35, y: 2.65, w: 5.3, h: 0.65, fontSize: 13, color: 'B8C1D4' });
     const st = [['38,24 млн', 'население на 01.01.2026'], ['29,5 года', 'средний возраст населения'], ['89%', 'проникновение интернета (DataReportal)'], ['+7,7%', 'рост ВВП в 2025 году']];
@@ -63,9 +63,9 @@ module.exports = async (d, pres) => {
       title: 'Кто мы: технологическая компания с экосистемной стратегией', status: 'CONFIRM',
       notes: 'ТЕЗИС: FootureX Uzbekistan — технологическая компания, а не одна игра.\nКорпоративные реквизиты: юридическое наименование MChJ «FootureX Uzbekistan»; международное — FootureX Uzbekistan LLC; Ташкент; планируемая ОПФ — ООО (MChJ).\nТРЕБУЕТСЯ ПОДТВЕРЖДЕНИЕ: факт и дата государственной регистрации, ИНН, уставный капитал, состав участников, статус резидента IT Park — документы не предоставлены.\nСвязка: далее — как возникла идея.',
     });
-    d.text(s, 'FootureX Uzbekistan — технологическая компания из Ташкента, которая разрабатывает программное обеспечение и AI-решения, создаёт игры и формирует долгосрочную экосистему образования, киберспорта и спорта.', { x: M, y: 2.0, w: 6.0, h: 1.95, fontSize: 17, color: C.text, lineSpacingMultiple: 1.12, objectName: 'a1_def' });
+    d.text(s, 'FootureX Uzbekistan — технологическая компания из Ташкента, которая создаётся для разработки программного обеспечения, AI-решений и игр и строит долгосрочную экосистему образования, киберспорта и спорта.', { x: M, y: 2.0, w: 6.0, h: 1.95, fontSize: 17, color: C.text, lineSpacingMultiple: 1.12, objectName: 'a1_def' });
     d.text(s, 'Позиционирование', { x: M, y: 4.3, w: 6, h: 0.3, fontSize: 12, bold: true, color: C.accent });
-    d.text(s, 'Technology, Gaming, Artificial Intelligence, Sports & Urban Innovation Ecosystem', { x: M, y: 4.63, w: 6.0, h: 0.75, fontSize: 15, fontFace: F.bodyLatin, color: 'E6ECF5' });
+    d.text(s, 'Technology, Gaming, Artificial Intelligence, Sports & Urban Innovation Ecosystem', { x: M, y: 4.63, w: 6.0, h: 0.75, fontSize: 15, fontFace: F.bodyLatin, color: 'FFFFFF' });
     d.text(s, 'Слоган бренда · Brand Book v1.0', { x: M, y: 5.5, w: 6, h: 0.3, fontSize: 12, bold: true, color: C.accent });
     d.text(s, 'We will create a digital football era.', { x: M, y: 5.83, w: 6.3, h: 0.45, fontSize: 14, fontFace: F.displayLatin, color: C.text });
     d.table(s, [
@@ -91,8 +91,8 @@ module.exports = async (d, pres) => {
       { title: 'Футбол как общий язык', text: 'Футбол — самый массовый вид спорта страны. Сборная Узбекистана впервые вышла на чемпионат мира ФИФА 2026.' },
       { title: 'Цифровое поколение', text: 'Молодое население, 89% интернет-проникновения и Telegram как ежедневная платформа общения.' },
       { title: 'Идея FootureX Game', text: 'Футбольный менеджер в Telegram Web App: команда, развитие игроков, PvP и сезоны без установки приложения.' },
-      { title: 'От игры к компании', text: 'Игре нужны собственные технологии, AI, аналитика и сообщество — так появилась технологическая основа.' },
-      { title: 'Экосистема', text: 'IT и AI-услуги дают выручку и компетенции; игры, образование и спорт формируют долгосрочную ценность бренда.' },
+      { title: 'От игры к компании', text: 'Игре нужны собственные технологии, AI, аналитика и сообщество — отсюда идея собственной технологической основы.' },
+      { title: 'Экосистема', text: 'По модели IT и AI-услуги должны давать выручку и компетенции; игры, образование и спорт — долгосрочную ценность бренда.' },
     ], { y: 2.35, titleH: 0.62, textH: 2.3, textSize: 12.5 });
   }
 
@@ -106,8 +106,7 @@ module.exports = async (d, pres) => {
     d.text(s, 'Корпоративная миссия · проект формулировки', { x: M, y: 2.0, w: 6, h: 0.3, fontSize: 12, bold: true, color: C.accent });
     d.text(s, 'Создавать технологии и цифровые продукты, которые объединяют людей вокруг спорта, знаний и инноваций — и раскрывают таланты Узбекистана для мировой индустрии.', { x: M, y: 2.4, w: 6.1, h: 1.55, fontSize: 17, color: C.text, lineSpacingMultiple: 1.12, objectName: 'a1_m' });
     d.text(s, 'Миссия игрового направления · BX-001', { x: M, y: 4.1, w: 6, h: 0.3, fontSize: 12, bold: true, color: C.accent });
-    d.text(s, 'Крупнейшая футбольная цифровая экосистема Центральной Азии с дальнейшим выходом на международный рынок.', { x: M, y: 4.45, w: 6.1, h: 0.8, fontSize: 14, color: 'E6ECF5', objectName: 'a2_g' });
-    d.text(s, '«Не игра в Telegram — а спортивная инфраструктура.» — манифест бренда', { x: M, y: 5.45, w: 6.1, h: 0.6, fontSize: 12.5, italic: true, color: C.soft, objectName: 'a3_g' });
+    d.text(s, 'Крупнейшая футбольная цифровая экосистема Центральной Азии с дальнейшим выходом на международный рынок.', { x: M, y: 4.45, w: 6.1, h: 0.8, fontSize: 14, color: 'FFFFFF', objectName: 'a2_g' });
   }
 
   // 7 — Vision 10–20 years
@@ -117,15 +116,16 @@ module.exports = async (d, pres) => {
       notes: 'ТЕЗИС: амбиция масштабная, но последовательность реалистична — от цифровых направлений к физической инфраструктуре.\nГоды отсчитываются от запуска операционной деятельности (дата требует подтверждения). Горизонты 3–4 зависят от финансирования, земельных и регуляторных согласований.\nРАСХОЖДЕНИЕ: BX-001 задаёт горизонт игрового проекта 10–12 лет; корпоративная концепция — 10–20 лет для всей группы, включая инфраструктуру. Это разные уровни, но горизонт стоит согласовать.\nФинансирование первых горизонтов — по стадиям BX-008: Bootstrap → Seed → Growth → Ecosystem Expansion.\nСвязка: далее — ценности, на которых строится компания.',
     });
     d.timeline(s, [
-      { label: 'Годы 1–3', title: 'Фундамент', text: 'IT- и AI-услуги как источник выручки. Запуск FootureX Game в Telegram. Пилот Game Dev Academy.' },
-      { label: 'Годы 4–6', title: 'Масштаб', text: 'AI SaaS-продукты, киберспорт и сообщество, рост академии, выход на рынки Центральной Азии.', color: C.accent2 },
+      { label: 'Годы 1–3', title: 'Фундамент', text: 'IT- и AI-услуги как источник выручки. Игровая студия, запуск FootureX Game в Telegram и сообщества. Пилот академии.' },
+      { label: 'Годы 4–6', title: 'Масштаб', text: 'AI SaaS-продукты, FootureX Esports, рост академии, выход на рынки Центральной Азии.', color: C.accent2 },
       { label: 'Годы 7–10', title: 'Спорт', text: 'FootureX Football Academy, формирование FC FootureX, ТЭО стадиона и поиск партнёров.', color: C.dot },
       { label: 'Годы 11–20', title: 'Инфраструктура', text: 'FootureX Stadium и FootureX City — при наличии земли, разрешений и проектного финансирования.', color: C.muted },
-    ], { y: 3.25, titleH: 0.45, textH: 1.2, textSize: 12.5, labelSize: 15 });
-    const fund = ['Bootstrap и Seed (BX-008), выручка IT/AI', 'Growth-раунд после метрик (BX-008)', 'Стратегические и спортивные партнёры', 'Проектное финансирование, ГЧП, девелоперы'];
+    ], { y: 3.4, titleH: 0.42, textH: 1.08, textSize: 11.5, labelSize: 15 });
+    const fund = ['IT/AI-выручка; для игры — Bootstrap и Seed (BX-008)', 'Growth-раунд после метрик (BX-008)', 'Стратегические и спортивные партнёры', 'Проектное финансирование, ГЧП, девелоперы'];
     d.text(s, 'Основной источник финансирования горизонта', { x: M, y: 5.3, w: 8, h: 0.3, fontSize: 11, bold: true, color: '8A93A6' });
-    fund.forEach((t, i) => { const x = M + i * 3.066; d.card(s, x, 5.65, 2.93, 0.82, { name: `a${i + 5}_f` }); d.text(s, t, { x: x + 0.2, y: 5.65, w: 2.55, h: 0.85, fontSize: 12, valign: 'middle', color: 'D3D9E5', objectName: `a${i + 5}_ft` }); });
+    fund.forEach((t, i) => { const x = M + i * 3.066; d.card(s, x, 5.65, 2.93, 0.82, { name: `a${i + 5}_f` }); d.text(s, t, { x: x + 0.2, y: 5.65, w: 2.55, h: 0.85, fontSize: 12, valign: 'middle', color: 'B8C1D4', objectName: `a${i + 5}_ft` }); });
     d.text(s, 'Цифровые направления финансируют и усиливают физические — не наоборот.', { x: M, y: 1.95, w: 12, h: 0.4, fontSize: 15, color: 'B8C1D4', italic: true });
+    d.text(s, 'Горизонт игрового проекта по BX-001 — 10–12 лет; горизонт группы — 10–20 лет. Годы — ориентиры от старта операционной деятельности.', { x: M, y: 2.38, w: 12, h: 0.3, fontSize: 10.5, color: C.dot });
   }
 
   // 8 — Values
@@ -147,50 +147,55 @@ module.exports = async (d, pres) => {
   // 9 — Directions
   {
     const s = d.slide({
-      title: 'Десять направлений деятельности и их текущий статус', status: 'CONFIRM',
-      notes: 'ТЕЗИС: десять направлений — единая система, но с разной степенью готовности.\nЛегенда статусов: «План · Фаза 1» — планируемые к запуску первыми; «В разработке» — продукт в работе; «Концепция» — стратегическая концепция; «Амбиция» — долгосрочная цель.\nТРЕБУЕТСЯ ПОДТВЕРЖДЕНИЕ: статусы присвоены консервативно по брифу; фактическое состояние каждого направления должно подтвердить руководство.\nСвязка: далее — карта экосистемы.',
+      title: 'Основные направления деятельности и их текущий статус', status: 'CONFIRM',
+      notes: 'ТЕЗИС: одиннадцать направлений — единая система, но с разной степенью готовности; ни одно не показано как действующее.\nЛегенда: «Концепция · Фаза 1» — направления, которые планируется запускать первыми (документами BX не описаны); «Проект · документы BX» — FootureX Game спроектирован в документах BX-001…BX-013, фактическая степень реализации требует подтверждения; «Концепция» — стратегическая концепция; «Амбиция» — долгосрочная цель.\nCommunity и Esports разделены: сообщество растёт вместе с игрой, киберспорт по BX-008 относится к стадии Ecosystem Expansion.\nТРЕБУЕТСЯ ПОДТВЕРЖДЕНИЕ: фактическое состояние каждого направления должно подтвердить руководство.\nСвязка: далее — карта экосистемы.',
     });
     const items = [
-      ['LuCodeXml', 'FootureX Technologies', 'ПО, ERP/CRM/POS, веб и мобайл', 'План · Фаза 1', C.accent],
-      ['LuBot', 'FootureX AI', 'AI-агенты и автоматизация', 'План · Фаза 1', C.accent],
-      ['LuGamepad2', 'FootureX Game Development', 'Студия: свои и заказные игры', 'План · Фаза 1', C.accent],
-      ['LuSmartphone', 'FootureX Game', 'Футбольный менеджер в Telegram', 'Foundation', C.accent2],
-      ['LuGraduationCap', 'FootureX Game Dev Academy', 'Подготовка кадров индустрии', 'План · пилот', C.accent],
-      ['LuTrophy', 'Game Community & Esports', 'Сообщество, турниры, медиа', 'Концепция', C.warn],
-      ['LuShield', 'FC FootureX', 'Профессиональный клуб', 'Концепция', C.warn],
-      ['LuGoal', 'FootureX Football Academy', 'Детско-юношеский футбол', 'Концепция', C.warn],
-      ['LuLandmark', 'FootureX Stadium', 'Стадион и esports-арена', 'Амбиция', C.steel],
-      ['LuBuilding2', 'FootureX City', 'Многофункциональный квартал', 'Амбиция', C.steel],
+      ['LuCodeXml', 'FootureX Technologies', 'ПО, ERP/CRM/POS, веб и мобайл', 'Концепция · Фаза 1', C.accent],
+      ['LuBot', 'FootureX AI', 'AI-агенты и автоматизация', 'Концепция · Фаза 1', C.accent],
+      ['LuGamepad2', 'FootureX Game Development', 'Студия: свои и заказные игры', 'Концепция · Фаза 1', C.accent],
+      ['LuSmartphone', 'FootureX Game', 'Футбольный менеджер в Telegram', 'Проект · документы BX', C.accent2],
+      ['LuGraduationCap', 'FootureX Game Dev Academy', 'Подготовка кадров индустрии', 'Концепция · пилот', C.accent],
+      ['LuUsers', 'FootureX Game Community', 'Игровое сообщество и клубы', 'Концепция · с игрой', C.dot],
+      ['LuTrophy', 'FootureX Esports', 'Турниры, лиги, команды', 'Концепция · Expansion', C.dot],
+      ['LuShield', 'FC FootureX', 'Профессиональный клуб', 'Концепция', C.dot],
+      ['LuGoal', 'FootureX Football Academy', 'Детско-юношеский футбол', 'Концепция', C.dot],
+      ['LuLandmark', 'FootureX Stadium', 'Стадион и esports-арена', 'Амбиция', C.muted],
+      ['LuBuilding2', 'FootureX City', 'Многофункциональный квартал', 'Амбиция', C.muted],
     ];
-    const cw = 2.27, ch = 2.15, gap = 0.19;
+    const cols = 4, gx = 0.18, gy = 0.12, cw = (W - 2 * M - gx * (cols - 1)) / cols, ch = 1.5;
     for (let i = 0; i < items.length; i++) {
       const [ic, t, sub, tag, col] = items[i];
-      const x = M + (i % 5) * (cw + gap), y = 2.0 + Math.floor(i / 5) * (ch + gap);
-      d.card(s, x, y, cw, ch, { name: `a${i + 1}_c` });
-      await d.iconBadge(s, ic, x + 0.2, y + 0.2, 0.46, { name: `a${i + 1}_i`, color: col === C.steel ? C.steel : col === C.warn ? C.warn : col === C.accent2 ? C.accent2 : C.accent, bg: col === C.accent ? '142A70' : col === C.accent2 ? '142A70' : col === C.warn ? '142A70' : '0E1629' });
-      d.text(s, t, { x: x + 0.2, y: y + 0.78, w: cw - 0.35, h: 0.5, fontSize: 11.5, bold: true, objectName: `a${i + 1}_t` });
-      d.text(s, sub, { x: x + 0.2, y: y + 1.3, w: cw - 0.35, h: 0.42, fontSize: 10, color: 'B8C1D4', objectName: `a${i + 1}_s` });
-      d.pill(s, tag, x + 0.2, y + ch - 0.42, { color: col, fontSize: 8, h: 0.26, w: 1.35 });
+      const x = M + (i % cols) * (cw + gx), y = 2.0 + Math.floor(i / cols) * (ch + gy);
+      d.card(s, x, y, cw, ch, { name: `a${Math.floor(i / cols) + 1}_c${i}`, line: col === C.accent2 ? C.accent2 : C.line });
+      await d.iconBadge(s, ic, x + 0.18, y + 0.18, 0.46, { name: `a${Math.floor(i / cols) + 1}_i${i}`, color: col === C.muted ? C.soft : col });
+      d.text(s, t, { x: x + 0.76, y: y + 0.14, w: cw - 0.9, h: 0.52, fontSize: 12, bold: true, valign: 'middle' });
+      d.text(s, sub, { x: x + 0.76, y: y + 0.66, w: cw - 0.9, h: 0.4, fontSize: 10, color: C.soft });
+      d.pill(s, tag, x + 0.76, y + ch - 0.4, { color: col, fontSize: 9, h: 0.26, w: Math.min(cw - 0.9, 0.5 + tag.length * 0.075) });
     }
+    const lx = M + 3 * (cw + gx), ly = 2.0 + 2 * (ch + gy);
+    d.card(s, lx, ly, cw, ch, { name: 'a3_leg', fill: C.bg, line: C.line });
+    d.text(s, [{ text: 'Действующих направлений: ', options: { color: C.soft } }, { text: 'нет подтверждённых', options: { bold: true, color: C.text } }, { text: '\nСтатусы — консервативно, до подтверждения руководством', options: { color: C.muted, fontSize: 9.5 } }], { x: lx + 0.2, y: ly + 0.15, w: cw - 0.4, h: ch - 0.3, fontSize: 11, valign: 'middle' });
   }
 
   // 10 — Ecosystem map
   {
     const s = d.slide({
       title: 'FootureX Ecosystem: как направления усиливают друг друга', status: 'VISION',
-      notes: 'ТЕЗИС: экосистема создаёт перекрёстные эффекты — каждое направление поставляет другим клиентов, технологии, таланты или аудиторию.\nПримеры связей: Technologies и AI строят платформу для игры; игра формирует сообщество и киберспорт; академия готовит кадры для студии; AI-аналитика служит футбольной академии; стадион и City объединяют аудитории офлайн.\nСвязка: глава II — рынки и стратегия.',
+      notes: 'ТЕЗИС: экосистема создаёт перекрёстные эффекты — каждое направление поставляет другим клиентов, технологии, таланты или аудиторию.\nПримеры связей: Technologies и AI строят платформу для игры; игра формирует сообщество, сообщество — киберспорт; академия готовит кадры для студии; AI-аналитика служит футбольной академии; стадион и City объединяют аудитории офлайн.\nСвязка: глава II — рынки и стратегия.',
     });
     await d.hub(s, 'ECOSYSTEM CORE', [
       { title: 'Technologies', sub: 'платформа и выручка', icon: 'LuCodeXml' },
       { title: 'AI', sub: 'агенты и аналитика', icon: 'LuBot' },
       { title: 'Game Development', sub: 'студия', icon: 'LuGamepad2' },
       { title: 'FootureX Game', sub: 'Telegram Web App', icon: 'LuSmartphone', color: C.accent2 },
-      { title: 'Community & Esports', sub: 'аудитория', icon: 'LuTrophy', color: C.warn },
+      { title: 'Game Community', sub: 'аудитория', icon: 'LuUsers', color: C.dot },
+      { title: 'FootureX Esports', sub: 'турниры', icon: 'LuTrophy', color: C.dot },
       { title: 'Game Dev Academy', sub: 'кадры', icon: 'LuGraduationCap' },
-      { title: 'FC FootureX', sub: 'клуб', icon: 'LuShield', color: C.warn },
-      { title: 'Football Academy', sub: 'таланты', icon: 'LuGoal', color: C.warn },
-      { title: 'FootureX Stadium', sub: 'офлайн-арена', icon: 'LuLandmark', color: C.steel },
-      { title: 'FootureX City', sub: 'городская среда', icon: 'LuBuilding2', color: C.steel },
-    ], { cy: 4.3, rx: 4.85, ry: 2.05, nw: 2.4, nh: 0.7, fs: 10.5 });
+      { title: 'FC FootureX', sub: 'клуб', icon: 'LuShield', color: C.dot },
+      { title: 'Football Academy', sub: 'таланты', icon: 'LuGoal', color: C.dot },
+      { title: 'FootureX Stadium', sub: 'офлайн-арена', icon: 'LuLandmark', color: C.muted },
+      { title: 'FootureX City', sub: 'городская среда', icon: 'LuBuilding2', color: C.muted },
+    ], { cy: 4.3, rx: 4.95, ry: 2.1, nw: 2.3, nh: 0.66, fs: 10.5 });
   }
 };

@@ -21,9 +21,17 @@
     "lightLine": "273B51"
   },
   "colorNames": {
-    "bg": "BG · Background", "accent2": "Primary · CTA · Gradient", "accent": "Secondary · Accent · Links", "kit": "Footer / Kit",
-    "surface": "Section · Panels · Cards", "line": "Border · Dividers", "dot": "Dot · Highlights", "outline": "FAQ Border · Outlines",
-    "text": "Text · Headlines", "soft": "Soft · Body text", "muted": "Mute · Captions"
+    "bg": "BG · Background",
+    "accent2": "Primary · CTA · Gradient",
+    "accent": "Secondary · Accent · Links",
+    "kit": "Footer / Kit",
+    "surface": "Section · Panels · Cards",
+    "line": "Border · Dividers",
+    "dot": "Dot · Highlights",
+    "outline": "FAQ Border · Outlines",
+    "text": "Text · Headlines",
+    "soft": "Soft · Body text",
+    "muted": "Mute · Captions"
   },
   "fonts": {
     "displayLatin": "Zen Dots",
@@ -36,6 +44,6 @@
     "mark": "logo/footurex-mark-white.png",
     "onDark": "logo/footurex-lockup-on-dark.png",
     "hero": "logo/footurex-wordmark-hero.png",
-    "_note": "Знак извлечён из брендбука (вариант Primary · on brand blue, 600 dpi), прорези X прозрачные. Локап «знак + FootureX» и двухцветный вордмарк набраны фирменным Zen Dots в цветах брендбука."
+    "_note": "Все три файла извлечены из векторных страниц брендбука без перерисовки: знак — стр. «03 Логотип» (Primary), локап «знак + FootureX» — шапка страниц брендбука (1400 dpi), двухцветный вордмарк — обложка (600 dpi). Фон удалён разложением по альфа-каналу; прорези X прозрачные."
   }
 }

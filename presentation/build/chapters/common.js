@@ -5,12 +5,12 @@ const { C, F, W, H, M } = require('../deck/lib');
 async function opener(d, o) {
   const s = d.slide({
     master: 'FX_FULL', title: o.title, status: o.status, notes: o.notes, source: o.source,
-    pre: (s) => d.fullImage(s, o.img, { overlay: [o.overlay || 'left', 'topbottom'], scale: o.scale, dx: o.dx, dy: o.dy, name: '!!render' }),
+    pre: (s) => d.fullImage(s, o.img, { overlay: [o.overlay || 'left', 'topbottom'], scale: o.scale, dx: o.dx, dy: o.dy, name: '!!render', video: o.video }),
   });
   const ci = d.chapterInfo;
   d.text(s, ci.num, { x: M - 0.05, y: 1.95, w: 5, h: 1.45, fontSize: 88, fontFace: F.displayLatin, color: C.accent, objectName: '!!roman' });
   d.text(s, ci.ru.toUpperCase(), { x: M, y: 3.45, w: 5.8, h: 0.35, fontSize: 13, bold: true, color: 'B8C1D4', charSpacing: 2 });
-  d.text(s, o.lead, { x: M, y: 3.95, w: o.leadW || 5.2, h: 1.35, fontSize: 15, color: 'E6ECF5', lineSpacingMultiple: 1.15, objectName: 'a1_lead' });
+  d.text(s, o.lead, { x: M, y: 3.95, w: o.leadW || 5.2, h: 1.35, fontSize: 15, color: 'FFFFFF', lineSpacingMultiple: 1.15, objectName: 'a1_lead' });
   if (o.points) {
     const y = 5.45;
     o.points.forEach((p, i) => {
@@ -29,9 +29,9 @@ function renderPanel(d, o) {
   const side = o.side || 'left';
   const s = d.slide({
     master: 'FX_FULL', title: o.title, status: o.status, notes: o.notes, source: o.source,
-    pre: (s) => d.fullImage(s, o.img, { overlay: [].concat(o.overlay || side, o.noTop ? [] : ['topbottom']), scale: o.scale, dx: o.dx, dy: o.dy, name: o.imgName || '!!render' }),
+    pre: (s) => d.fullImage(s, o.img, { overlay: [].concat(o.overlay || side, o.noTop ? [] : ['topbottom']), scale: o.scale, dx: o.dx, dy: o.dy, name: o.imgName || '!!render', video: o.video }),
   });
-  if (o.caption !== false) d.caption(s, o.caption || 'Концептуальная визуализация', side === 'left' ? W - M - 3.2 : M, side === 'left' ? 6.74 : 6.12, {});
+  if (o.caption !== false) d.caption(s, o.caption || 'Концептуальная визуализация', side === 'left' ? W - M - 3.2 : M, side === 'left' ? 6.74 : 6.12, { backing: side !== 'left', align: side === 'left' ? 'right' : 'left' });
   return s;
 }
 

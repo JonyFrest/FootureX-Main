@@ -30,15 +30,14 @@ const CHAPTERS = [
 ];
 
 function masters(pres) {
-  const ld = logoPath(true), ll = logoPath(false);
+  const ld = logoPath(true);
   const titlePh = (color) => ({ placeholder: { options: { name: 'title', type: 'title', x: M, y: 0.72, w: W - 2 * M, h: 1.0, fontFace: F.displayCyrillic, fontSize: 23, color, valign: 'top', align: 'left', margin: 0, lineSpacingMultiple: 1.05 }, text: '' } });
   const footer = (lg, numColor) => [
-    { image: { x: M, y: 7.06, w: 0.2 * LOGO_RATIO, h: 0.2, path: lg.path } },
+    { image: { x: M, y: 7.04, w: 0.24 * LOGO_RATIO, h: 0.24, path: lg.path } },
     { text: { text: `/ ${TOTAL}`, options: { x: W - M - 0.55, y: 7.04, w: 0.55, h: 0.26, fontFace: F.bodyLatin, fontSize: 9, color: numColor, align: 'left', valign: 'middle', margin: 0 } } },
   ];
   const num = (color) => ({ x: W - M - 1.05, y: 7.04, w: 0.48, h: 0.26, fontFace: F.bodyLatin, fontSize: 9, color, align: 'right', valign: 'middle', margin: 0 });
   pres.defineSlideMaster({ title: 'FX_DARK', background: { path: ASSET('renders/bg-dark.jpg') }, objects: [...footer(ld, C.muted), titlePh(C.text)], slideNumber: num(C.text) });
-  pres.defineSlideMaster({ title: 'FX_LIGHT', background: { color: C.lightBg }, objects: [...footer(ll, '6B7486'), titlePh(C.lightText)], slideNumber: num(C.lightText) });
   pres.defineSlideMaster({ title: 'FX_FULL', background: { color: C.bg }, objects: [titlePh(C.text)] });
   pres.defineSlideMaster({ title: 'FX_COVER', background: { color: C.bg }, objects: [] });
 }
@@ -55,11 +54,11 @@ function masters(pres) {
   const d = new Deck(pres);
 
   // full-bleed slide chrome added on the slide itself (master objects would sit under the image)
-  d.fullChrome = (s) => {
+  d.fullChrome = (s, o = {}) => {
     const lg = logoPath(true);
-    s.addImage({ path: lg.path, x: M, y: 7.06, w: 0.2 * LOGO_RATIO, h: 0.2 });
+    if (!o.noFooterLogo) s.addImage({ path: lg.path, x: M, y: 7.04, w: 0.24 * LOGO_RATIO, h: 0.24 });
     s.slideNumber = { x: W - M - 1.05, y: 7.04, w: 0.48, h: 0.26, fontFace: F.bodyLatin, fontSize: 9, color: C.text, align: 'right', valign: 'middle', margin: 0 };
-    d.text(s, `/ ${TOTAL}`, { x: W - M - 0.55, y: 7.04, w: 0.55, h: 0.26, fontFace: F.bodyLatin, fontSize: 9, color: 'A9B4C7', valign: 'middle' });
+    d.text(s, `/ ${TOTAL}`, { x: W - M - 0.55, y: 7.04, w: 0.55, h: 0.26, fontFace: F.bodyLatin, fontSize: 9, color: '8A93A6', valign: 'middle' });
   };
   d.setChapter = (i) => {
     const [num, en, ru] = CHAPTERS[i];
@@ -80,8 +79,12 @@ function masters(pres) {
 
   console.log('slides:', d.n);
   if (warnings.length) console.log('WARNINGS:\n' + warnings.join('\n'));
-  await pres.writeFile({ fileName: OUT });
-  require('child_process').execFileSync('python3', [path.join(__dirname, 'postprocess.py'), OUT], { stdio: 'inherit' });
+  if (d.n !== TOTAL) throw new Error(`expected ${TOTAL} slides, got ${d.n}`);
+  // build into a temp file and only replace the deliverable after post-processing succeeded
+  const TMP = OUT.replace(/\.pptx$/, '.building.pptx');
+  await pres.writeFile({ fileName: TMP });
+  require('child_process').execFileSync('python3', [path.join(__dirname, 'postprocess.py'), TMP], { stdio: 'inherit' });
+  fs.renameSync(TMP, OUT);
   fs.writeFileSync(path.join(__dirname, '..', 'output', 'slide_log.json'), JSON.stringify({ slides: d.notesLog, status: d.statusLog, sources: d.sourcesLog }, null, 1));
   console.log('wrote', OUT);
 })().catch((e) => { console.error(e); process.exit(1); });

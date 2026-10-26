@@ -9,8 +9,8 @@ import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 export { THREE };
 
 export const PAL = {
-  bg: 0x070b12, bg2: 0x0c1424, surface: 0x141c2b, concrete: 0x1c2534, steel: 0xc9d3e3,
-  accent: 0x1ed68a, accent2: 0x3d8bff, warm: 0xffd9a8, pitch: 0x0d3a28, line: 0x26324a,
+  bg: 0x0b0f0e, bg2: 0x0e1629, surface: 0x141c2b, concrete: 0x1c2534, steel: 0xc9d3e3,
+  accent: 0x2593fa, accent2: 0x2550fa, warm: 0xffd9a8, pitch: 0x0d3a28, line: 0x26324a,
 };
 
 let seed = 1337;
@@ -29,7 +29,7 @@ export function createStage(W, H, opts = {}) {
   document.body.appendChild(renderer.domElement);
 
   const scene = new THREE.Scene();
-  scene.background = gradientTexture(opts.bgTop ?? '#0d1830', opts.bgBottom ?? '#05080e');
+  scene.background = gradientTexture(opts.bgTop ?? '#0e1a3a', opts.bgBottom ?? '#0b0f0e');
   if (opts.fog !== false) scene.fog = new THREE.FogExp2(PAL.bg, opts.fogDensity ?? 0.0009);
 
   const pmrem = new THREE.PMREMGenerator(renderer);
@@ -100,7 +100,7 @@ export function windowTexture(o = {}) {
   for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
     const r = rnd();
     if (r < (o.lit ?? 0.32)) {
-      g.fillStyle = r < 0.03 ? '#1ed68a' : (r < 0.07 ? '#7fb2ff' : '#ffe2b8');
+      g.fillStyle = r < 0.03 ? '#2593fa' : (r < 0.07 ? '#7fb2ff' : '#ffe2b8');
       g.globalAlpha = 0.45 + rnd() * 0.55;
       g.fillRect(x * cw + cw * 0.18, y * rh + rh * 0.22, cw * 0.64, rh * 0.5);
     }

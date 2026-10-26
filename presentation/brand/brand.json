@@ -1,34 +1,41 @@
 {
-  "_comment": "ПРОВИЗОРНЫЙ бренд-конфиг. Файл FootureX_Brandbook.pdf не был передан в сессию. После получения брендбука замените цвета/шрифты и положите оригинальные логотипы в brand/logo/, затем пересоберите: cd presentation/build && npm run build",
-  "status": "provisional",
+  "_comment": "Источник: FootureX Brand Book · Identity Guidelines v1.0 (2026), brand/FootureX_Brandbook.pdf. Тёмная база, синие акценты, белый текст.",
+  "status": "brandbook-v1.0",
   "colors": {
-    "bg": "070B12",
-    "surface": "0E1521",
-    "surface2": "162030",
-    "line": "26324A",
-    "text": "F4F7FB",
-    "muted": "8D99AE",
-    "accent": "1ED68A",
-    "accent2": "3D8BFF",
-    "steel": "C9D3E3",
-    "warn": "FFB547",
-    "risk": "FF5A5F",
-    "lightBg": "F3F5F9",
-    "lightSurface": "FFFFFF",
-    "lightText": "0B111B",
-    "lightMuted": "5B6578",
-    "lightLine": "DCE2EC"
+    "bg": "0B0F0E",
+    "surface": "0E1629",
+    "surface2": "142A70",
+    "line": "273B51",
+    "text": "FFFFFF",
+    "soft": "B8C1D4",
+    "muted": "8A93A6",
+    "accent": "2593FA",
+    "accent2": "2550FA",
+    "kit": "1B3EE9",
+    "dot": "8EB4FF",
+    "outline": "142A70",
+    "steel": "B8C1D4",
+    "warn": "8EB4FF",
+    "lightBg": "FFFFFF",
+    "lightText": "0B0F0E",
+    "lightLine": "273B51"
+  },
+  "colorNames": {
+    "bg": "BG · Background", "accent2": "Primary · CTA · Gradient", "accent": "Secondary · Accent · Links", "kit": "Footer / Kit",
+    "surface": "Section · Panels · Cards", "line": "Border · Dividers", "dot": "Dot · Highlights", "outline": "FAQ Border · Outlines",
+    "text": "Text · Headlines", "soft": "Soft · Body text", "muted": "Mute · Captions"
   },
   "fonts": {
     "displayLatin": "Zen Dots",
     "bodyLatin": "Poppins",
     "displayCyrillic": "Unbounded",
     "bodyCyrillic": "Montserrat",
-    "_note": "Zen Dots и Poppins не содержат кириллических глифов, поэтому русский текст набирается Unbounded / Montserrat (Google Fonts, OFL). Латиница — Zen Dots / Poppins."
+    "_note": "Брендбук: Zen Dots — заголовки, логотип, цифры; Poppins — текст и UI. Фактические файлы Zen Dots и Poppins (Google Fonts) не содержат кириллицы — сам брендбук рендерит кириллицу системным Liberation Sans. Для кириллицы используются Unbounded (заголовки) и Montserrat (текст)."
   },
   "logo": {
-    "onDark": "logo/footurex-logo-on-dark.png",
-    "onLight": "logo/footurex-logo-on-light.png",
-    "_note": "Если файлы отсутствуют, сборка ставит временный текстовый знак и отмечает это в аудите. Оригинальный логотип НЕ перерисовывается."
+    "mark": "logo/footurex-mark-white.png",
+    "onDark": "logo/footurex-lockup-on-dark.png",
+    "hero": "logo/footurex-wordmark-hero.png",
+    "_note": "Знак извлечён из брендбука (вариант Primary · on brand blue, 600 dpi), прорези X прозрачные. Локап «знак + FootureX» и двухцветный вордмарк набраны фирменным Zen Dots в цветах брендбука."
   }
 }

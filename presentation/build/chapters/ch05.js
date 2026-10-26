@@ -1,211 +1,294 @@
-// ГЛАВА V. GAME DEVELOPMENT (41–52)
-const { C, F, W, H, M, ASSET } = require('../deck/lib');
+// ГЛАВА V. GAME DEVELOPMENT (41–52) — документальная основа: BX-001, BX-003, BX-004, BX-005, BX-007, BX-013
+const { C, F, W, H, M } = require('../deck/lib');
+
+const SRC = {
+  b1: 'Источник: BX-001 Business Plan / Strategic Business Architecture, v0.0.17.',
+  b3: 'Источник: BX-003 Economy Design Document, v0.1.01; BX-013 Approved Services Catalog, v1.0 (июнь 2026).',
+  b4: 'Источник: BX-004 Game System Design, v0.0.19.',
+  b5: 'Источники: BX-005 Technical Architecture, v0.0.79; BX-007 Telegram Web App Architecture, v0.1.21.',
+  b13: 'Источник: BX-013 Approved Services Catalog, v1.0 (июнь 2026) — заменяет цены BX-010.',
+};
 
 module.exports = async (d, pres) => {
-  // 41 — Studio opener (phones composition)
+  // 41 — Studio opener
   {
     const s = d.slide({
-      title: 'FootureX Game Development Studio', status: 'PLAN',
-      notes: 'ТЕЗИС: игровая студия — продуктовое ядро бренда FootureX: собственные игры и разработка для сторонних заказчиков.\nПодача: экраны — концепты интерфейса FootureX Game (Telegram Web App), не финальный дизайн.\nСвязка: далее — концепция студии.',
+      title: 'FootureX Game Development Studio', status: 'DEV', source: SRC.b1,
+      notes: 'ТЕЗИС: FootureX Game — долгосрочная спортивно-цифровая экосистема (BX-001), а не одна игра: футбольный симулятор, Telegram Web App, игровая экономика, пользовательские лиги, цифровая карьера игроков, соревновательная инфраструктура, социальные механики и перспективная blockchain-инфраструктура.\nМиссия игрового проекта (BX-001): создание крупнейшей футбольной цифровой экосистемы Центральной Азии с дальнейшим выходом на международный рынок. Горизонт — 10–12 лет.\nСтатус: этап Foundation; экраны — концепты интерфейса с демо-данными.\nСвязка: далее — архитектура экосистемы.',
     });
     const ci = d.chapterInfo;
     d.text(s, ci.num, { x: M - 0.05, y: 1.95, w: 4, h: 1.45, fontSize: 88, fontFace: F.displayLatin, color: C.accent, objectName: '!!roman' });
-    d.text(s, ci.ru.toUpperCase(), { x: M, y: 3.45, w: 5.8, h: 0.35, fontSize: 13, bold: true, color: 'C9D3E3', charSpacing: 2 });
-    d.text(s, 'Студия создаёт собственные игры и выполняет разработку для сторонних заказчиков. Флагманский продукт — футбольный менеджер FootureX Game в Telegram.', { x: M, y: 3.95, w: 5.5, h: 1.4, fontSize: 15, color: 'E6ECF5', lineSpacingMultiple: 1.15, objectName: 'a1_lead' });
-    d.text(s, 'Creating a Digital Football Era', { x: M, y: 5.6, w: 6, h: 0.4, fontSize: 15, fontFace: F.displayLatin, color: C.accent });
-    d.phoneImg(s, 'game-home', 6.2, 1.95, 4.55, '!!phoneA');
-    d.phoneImg(s, 'game-squad', 8.35, 1.7, 5.0, '!!phoneB');
-    d.phoneImg(s, 'game-player', 10.55, 1.95, 4.55, '!!phoneC');
-    d.caption(s, 'Концепт интерфейса', W - M - 3.2, 6.74);
+    d.text(s, ci.ru.toUpperCase(), { x: M, y: 3.45, w: 5.8, h: 0.35, fontSize: 13, bold: true, color: C.soft, charSpacing: 2 });
+    d.text(s, 'Миссия игрового проекта — крупнейшая футбольная цифровая экосистема Центральной Азии с дальнейшим выходом на международный рынок.', { x: M, y: 3.95, w: 5.3, h: 1.3, fontSize: 15, color: 'F0F3F8', lineSpacingMultiple: 1.15, objectName: 'a1_lead' });
+    [['10–12', 'лет · горизонт стратегии'], ['Telegram', 'платформа запуска'], ['Foundation', 'текущий этап']].forEach(([v, l], i) => {
+      const x = M + i * 1.8;
+      d.text(s, v, { x, y: 5.4, w: 1.75, h: 0.42, fontSize: v.length > 6 ? 14 : 20, fontFace: F.displayLatin, color: C.accent, objectName: `a${i + 2}_v` });
+      d.text(s, l, { x, y: 5.85, w: 1.7, h: 0.5, fontSize: 10.5, color: C.soft, objectName: `a${i + 2}_l` });
+    });
+    d.phoneImg(s, 'game-home', 6.2, 1.95, 4.5, '!!phoneA');
+    d.phoneImg(s, 'game-squad', 8.35, 1.7, 4.95, '!!phoneB');
+    d.phoneImg(s, 'game-player', 10.55, 1.95, 4.5, '!!phoneC');
+    d.caption(s, 'Концепт интерфейса · демо-данные', W - M - 3.2, 6.5);
   }
 
-  // 42 — Studio concept
+  // 42 — Ecosystem architecture (BX-001)
   {
     const s = d.slide({
-      title: 'Концепция игровой студии: четыре источника ценности', status: 'PLAN',
-      notes: 'ТЕЗИС: студия зарабатывает четырьмя способами и переиспользует технологии между ними.\nПринципы: одна технологическая платформа (Telegram Web App, движок симуляции, LiveOps-инструменты); заказная разработка стабилизирует денежный поток; собственные IP создают капитализацию.\nСвязка: далее — продуктовая стратегия.',
+      title: 'Концепция студии: архитектура экосистемы FootureX Game', status: 'DOC', source: SRC.b1,
+      notes: 'ТЕЗИС: архитектура BX-001 состоит из 12 систем; часть входит в этап Foundation, часть — в Ecosystem Expansion, blockchain — только после подтверждения устойчивости продукта.\nЭтапы на карточках сопоставлены с разделом этапов BX-001 и стратегией BX-008; распределение Media Direction и Social Layer по этапам требует подтверждения.\nСвязка: далее — продуктовая стратегия.',
     });
-    const q = [['LuGamepad2', 'Собственные игры (IP)', 'FootureX Game и будущие проекты: капитализация бренда и повторяющаяся выручка.', 'Ценность: капитализация'], ['LuBriefcase', 'Разработка на заказ', 'Игры и игровые механики для брендов, банков, телекома и студий.', 'Ценность: денежный поток'], ['LuRefreshCw', 'LiveOps как услуга', 'Сопровождение, сезоны, аналитика и экономика для чужих проектов.', 'Ценность: повторяющаяся выручка'], ['LuBlocks', 'Технологическая платформа', 'Переиспользуемые модули: авторизация, платежи, рейтинги, турниры.', 'Ценность: скорость и маржа']];
-    for (let i = 0; i < 4; i++) {
-      const [ic, t, x2, v] = q[i]; const x = M + (i % 2) * 6.165, y = 2.0 + Math.floor(i / 2) * 2.32;
-      d.card(s, x, y, 5.95, 2.12, { name: `a${i + 1}_c` });
-      await d.iconBadge(s, ic, x + 0.28, y + 0.3, 0.6, { name: `a${i + 1}_i` });
-      d.text(s, t, { x: x + 1.1, y: y + 0.32, w: 4.6, h: 0.35, fontSize: 15, bold: true, objectName: `a${i + 1}_t` });
-      d.text(s, x2, { x: x + 1.1, y: y + 0.75, w: 4.6, h: 0.75, fontSize: 12.5, color: 'B9C3D4', objectName: `a${i + 1}_d` });
-      d.text(s, v, { x: x + 1.1, y: y + 1.55, w: 4.6, h: 0.3, fontSize: 11.5, bold: true, color: C.accent, objectName: `a${i + 1}_v` });
+    const sys = [
+      ['LuGamepad2', 'Game Core', 'базовый gameplay и симуляция', 'Foundation'], ['LuSend', 'Telegram Ecosystem', 'запуск, вход, уведомления', 'Foundation'],
+      ['LuCoins', 'Economy System', 'Coins, FTXcoin, баланс', 'Foundation'], ['LuTrophy', 'League System', 'системные и пользовательские лиги', 'Expansion'],
+      ['LuStore', 'Marketplace', 'контролируемый рынок активов', 'Expansion'], ['LuTrendingUp', 'Progression', 'тренировки, матчи, Evolution', 'Foundation'],
+      ['LuUsers', 'Social Layer', 'друзья, клубы, чат, лидерборды', 'Expansion'], ['LuMedal', 'Battle Pass', 'сезоны 14 дней, 100 уровней', 'Foundation'],
+      ['LuCalendarDays', 'LiveOps', 'события, сезоны, аналитика', 'Foundation'], ['LuAppWindow', 'Web Platform', 'сайт — вход в экосистему', 'Foundation · MVP'],
+      ['LuTv', 'Media Direction', 'контент и медиа', 'Expansion'], ['LuBlocks', 'Future Blockchain', 'TON, цифровое владение', 'После подтверждения'],
+    ];
+    const cw = 2.86, ch = 1.38, gx = 0.23, gy = 0.17;
+    for (let i = 0; i < sys.length; i++) {
+      const [ic, t, x2, ph] = sys[i];
+      const x = M + (i % 4) * (cw + gx), y = 2.0 + Math.floor(i / 4) * (ch + gy);
+      d.card(s, x, y, cw, ch, { name: `a${Math.floor(i / 4) + 1}_c${i}`, line: ph.startsWith('После') ? C.line : ph.startsWith('Exp') ? C.outline : C.accent2 });
+      await d.iconBadge(s, ic, x + 0.18, y + 0.18, 0.46, { name: `a${Math.floor(i / 4) + 1}_i${i}` });
+      d.text(s, t, { x: x + 0.76, y: y + 0.16, w: cw - 0.9, h: 0.3, fontSize: 12.5, bold: true, fontFace: F.bodyLatin });
+      d.text(s, x2, { x: x + 0.76, y: y + 0.47, w: cw - 0.9, h: 0.5, fontSize: 10.5, color: C.soft });
+      d.text(s, ph, { x: x + 0.18, y: y + ch - 0.36, w: cw - 0.3, h: 0.24, fontSize: 9, bold: true, color: ph.startsWith('Found') ? C.accent : C.dot });
     }
   }
 
-  // 43 — Product strategy
+  // 43 — Product strategy (BX-001)
   {
     const s = d.slide({
-      dark: false, title: 'Продуктовая стратегия GameDev: фокус, затем расширение', status: 'PLAN',
-      notes: 'ТЕЗИС: сначала доводим один продукт до устойчивых метрик удержания и монетизации, затем расширяем портфель.\nПравило перехода: следующий продукт запускается только после достижения целевых метрик предыдущего (устанавливаются после soft launch).\nСвязка: далее — FootureX Game подробно.',
+      title: 'Продуктовая стратегия: цели, модель, аудитория, география', status: 'DOC', source: SRC.b1,
+      notes: 'ТЕЗИС: продуктовая стратегия BX-001 задаёт пять целей, четыре принципа бизнес-модели, четыре целевых сегмента и последовательную географию.\nЦели: узнаваемая IP; устойчивая игровая экономика; инфраструктура киберспорта и лиг; интеграция реальных спортивных проектов; платформа развития молодёжи и футбольных талантов.\nБизнес-модель: Freemium, Live Service, Seasonal Economy, Controlled Marketplace.\nАудитория: школьники 12–17, студенты 18–24, football gamers 16–30, пользователи Telegram 15–35.\nГеография: Ташкент и Узбекистан → СНГ → международный рынок.\nСвязка: далее — основной игровой продукт.',
     });
-    d.table(s, [
-      ['Этап', 'Портфель', 'Цель', 'Условие перехода'],
-      ['1. Фокус', 'FootureX Game (Telegram Web App)', 'Product-market fit в Узбекистане', 'Целевое удержание и платящие игроки'],
-      ['2. Регион', 'Локализация на языки Центральной Азии и СНГ', 'Рост аудитории и выручки', 'Окупаемость привлечения игроков'],
-      ['3. Портфель', 'Мини-игры и спин-оффы во вселенной FootureX', 'Перекрёстный трафик, ниже CAC', 'Платформа модулей готова'],
-      ['4. Сервис', 'Заказная разработка и LiveOps для партнёров', 'Стабильный денежный поток', 'Свободная мощность команды'],
-      ['5. Платформа', 'Лицензирование модулей турниров и экономики', 'Масштабируемая B2B-выручка', 'Подтверждённый спрос'],
-    ], { y: 2.0, colW: [1.6, 3.9, 3.2, 3.43], rowH: 0.72, size: 12, boldFirstCol: true });
+    const col = (x, w, title, items, a) => {
+      d.card(s, x, 2.0, w, 4.45, { name: a });
+      d.text(s, title, { x: x + 0.22, y: 2.15, w: w - 0.4, h: 0.32, fontSize: 13, bold: true, color: C.accent });
+      d.bullets(s, items, x + 0.22, 2.6, w - 0.4, 3.7, { fontSize: 11.5, gap: 6 });
+    };
+    col(M, 3.4, 'Цели BX-001', ['Узнаваемая интеллектуальная собственность', 'Устойчивая игровая экономика', 'Инфраструктура киберспорта и лиг', 'Интеграция реальных спортивных проектов', 'Платформа развития молодёжи и футбольных талантов'], 'a1_c');
+    col(4.2, 2.75, 'Бизнес-модель', ['Freemium', 'Live Service', 'Seasonal Economy', 'Controlled Marketplace'], 'a2_c');
+    d.card(s, 7.15, 2.0, 5.58, 2.55, { name: 'a3_c' });
+    d.text(s, 'Целевая аудитория', { x: 7.37, y: 2.15, w: 5, h: 0.32, fontSize: 13, bold: true, color: C.accent });
+    [['12–17', 'школьники'], ['18–24', 'студенты'], ['16–30', 'football gamers'], ['15–35', 'пользователи Telegram']].forEach(([a, b], i) => {
+      const x = 7.37 + (i % 2) * 2.65, y = 2.62 + Math.floor(i / 2) * 0.88;
+      d.text(s, a, { x, y, w: 1.2, h: 0.4, fontSize: 18, fontFace: F.displayLatin, color: C.text });
+      d.text(s, b, { x: x + 1.25, y: y + 0.04, w: 1.4, h: 0.4, fontSize: 11.5, color: C.soft, valign: 'middle' });
+    });
+    d.card(s, 7.15, 4.75, 5.58, 1.7, { name: 'a4_c' });
+    d.text(s, 'География', { x: 7.37, y: 4.9, w: 5, h: 0.32, fontSize: 13, bold: true, color: C.accent });
+    ['Ташкент и Узбекистан', 'СНГ', 'Международный рынок'].forEach((t, i) => {
+      const x = 7.37 + i * 1.75;
+      d.pill(s, t, x, 5.45, { w: 1.62, h: 0.5, fontSize: 9.5, color: i === 0 ? C.accent2 : C.line, fill: i === 0 ? C.outline : C.surface });
+      if (i < 2) s.addShape(pres.shapes.LINE, { x: x + 1.63, y: 5.7, w: 0.11, h: 0, line: { color: C.accent, width: 1.25, endArrowType: 'triangle' } });
+    });
   }
 
-  // 44 — Football Manager main product
+  // 44 — Football Manager main product (BX-004 core loop)
   {
     const s = d.slide({
-      title: 'FootureX Game: футбольный менеджер — основной игровой продукт', status: 'DEV',
-      notes: 'ТЕЗИС: FootureX Game — футбольный менеджер в Telegram Web App: собрать клуб, развивать игроков, соревноваться с другими.\nКлючевые решения: без установки (запуск из Telegram), короткие сессии, социальная механика (друзья, клубы, турниры), честная экономика.\nСтатус: продукт в разработке; экраны — концепты интерфейса, имена игроков вымышлены.\nСвязка: далее — архитектура приложения.',
+      title: 'Football Manager — основной игровой продукт', status: 'DOC', source: SRC.b4,
+      notes: 'ТЕЗИС: BX-004 проектирует FootureX как Football Manager, Competitive Ecosystem, Progression Platform и Social Football Universe; удержание строится на главном игровом цикле.\nЦикл: Login → Daily Systems → Training → Squad Management → Matches → Rewards → Progression → Marketplace → Events → League → Repeat.\nГлавный принцип BX-004: пользователь должен возвращаться ради интересного игрового опыта, а не из-за искусственного принуждения.\nСвязка: далее — архитектура приложения.',
     });
-    d.phoneImg(s, 'game-home', M, 1.95, 4.6, '!!phoneA');
-    d.phoneImg(s, 'game-league', M + 2.45, 1.95, 4.6, '!!phoneB');
-    d.caption(s, 'Концепт интерфейса', M, 6.6, {});
-    const f = [['LuSend', 'Запуск из Telegram', 'Без установки и регистрации: аккаунт Telegram = аккаунт игрока.'], ['LuUsers', 'Свой клуб', 'Название, состав, тактика, стадион и прогресс в лигах.'], ['LuSwords', 'PvP и турниры', 'Матчи против реальных соперников, недельные кубки и сезоны.'], ['LuCoins', 'Честная экономика', 'Прогресс за игру, покупки — ускорение и косметика, без вывода денег.']];
-    for (let i = 0; i < f.length; i++) {
-      const [ic, t, x2] = f[i]; const y = 2.0 + i * 1.12;
-      await d.iconBadge(s, ic, 6.0, y, 0.55, { name: `a${i + 1}_i` });
-      d.text(s, t, { x: 6.75, y: y - 0.02, w: 6.0, h: 0.32, fontSize: 14.5, bold: true, objectName: `a${i + 1}_t` });
-      d.text(s, x2, { x: 6.75, y: y + 0.33, w: 6.0, h: 0.6, fontSize: 12.5, color: 'B9C3D4', objectName: `a${i + 1}_d` });
-    }
+    d.phoneImg(s, 'game-home', M, 1.95, 4.55, '!!phoneA');
+    d.caption(s, 'Концепт интерфейса', M, 6.42, { align: 'left' });
+    const roles = ['Football Manager', 'Competitive Ecosystem', 'Progression Platform', 'Social Football Universe'];
+    roles.forEach((t, i) => d.pill(s, t, 3.05 + i * 2.43, 2.0, { w: 2.33, h: 0.42, fontSize: 9.5, color: C.accent2, fill: C.outline }));
+    // core loop as ring of 10 steps
+    const loop = ['Login', 'Daily Systems', 'Training', 'Squad Management', 'Matches', 'Rewards', 'Progression', 'Marketplace', 'Events', 'League'];
+    const cx = 7.95, cy = 4.55, rx = 3.85, ry = 1.55;
+    s.addShape(pres.shapes.OVAL, { x: cx - rx, y: cy - ry, w: rx * 2, h: ry * 2, fill: { type: 'none' }, line: { color: C.line, width: 1, dashType: 'dash' } });
+    d.text(s, 'REPEAT', { x: cx - 1.2, y: cy - 0.35, w: 2.4, h: 0.4, fontSize: 16, fontFace: F.displayLatin, color: C.accent, align: 'center' });
+    d.text(s, 'главный игровой цикл · BX-004', { x: cx - 1.6, y: cy + 0.08, w: 3.2, h: 0.3, fontSize: 10, color: C.muted, align: 'center' });
+    loop.forEach((t, i) => {
+      const ang = -Math.PI / 2 + (i / loop.length) * Math.PI * 2;
+      const x = cx + Math.cos(ang) * rx, y = cy + Math.sin(ang) * ry;
+      const w = 1.62;
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: x - w / 2, y: y - 0.22, w, h: 0.44, rectRadius: 0.22, fill: { color: C.surface }, line: { color: i === 0 ? C.accent2 : C.line, width: 1 }, objectName: `a${i + 1}_l` });
+      d.text(s, `${i + 1}. ${t}`, { x: x - w / 2, y: y - 0.22, w, h: 0.44, fontSize: 9.5, bold: true, align: 'center', valign: 'middle', fontFace: F.bodyLatin, objectName: `a${i + 1}_t` });
+    });
   }
 
-  // 45 — App architecture
+  // 45 — App architecture (BX-005 + BX-007)
   {
     const s = d.slide({
-      dark: false, title: 'Архитектура игрового приложения', status: 'CONFIRM',
-      notes: 'ТЕЗИС: архитектура рассчитана на быстрый рост аудитории и частые обновления без простоя.\nУровни: клиент (Telegram Web App, HTML5/WebGL); шлюз API; игровые сервисы (движок матча, прогрессия, экономика, матчмейкинг, турниры); данные (транзакционная БД, кэш, аналитика); платформа Telegram (Bot API, Mini Apps, платежи); эксплуатация (мониторинг, античит, CI/CD).\nТРЕБУЕТСЯ ПОДТВЕРЖДЕНИЕ: схема — целевая; актуальная архитектура должна быть сверена с технической документацией продукта.\nСвязка: далее — создание команды.',
+      title: 'Архитектура игрового приложения', status: 'DOC', source: SRC.b5,
+      notes: 'ТЕЗИС: FootureX строится как масштабируемая Live-Service Platform; Telegram Bot — навигационный шлюз, Web App — интерфейс, Backend API — основная логика; критическая игровая логика рассчитывается на сервере.\nBX-007: Telegram → Bot → Web App → API Gateway → Backend → Database → Realtime. Функции бота: запуск Web App, уведомления, события, Deep Links, поддержка, реферальная система.\nBX-005: Client → API Gateway → Auth Layer → Core Services → Databases → Realtime → Analytics → Monitoring. Frontend: React, Next.js, TypeScript, Tailwind, Zustand/Redux, WebSocket. Backend: Node.js, NestJS, TypeScript, PostgreSQL, Redis, RabbitMQ/Kafka, WebSocket Gateway, Docker. API: REST, WebSocket, внутренние события; JWT, Rate Limiting, API Versioning, Validation.\nВАЖНО: это проектная архитектура документов; степень реализации каждого компонента требует подтверждения технической командой.\nСвязка: далее — состав и управление командой.',
     });
     d.layers(s, [
-      { title: 'Клиент', items: ['Telegram Web App', 'HTML5 / WebGL', 'Локализация UZ / RU / EN'] },
-      { title: 'Шлюз', items: ['API Gateway', 'Авторизация Telegram', 'Лимиты и защита'] },
-      { title: 'Игровые сервисы', items: ['Движок матча', 'Прогрессия', 'Экономика', 'Матчмейкинг', 'Турниры'] },
-      { title: 'Данные', items: ['Транзакционная БД', 'Кэш', 'События и аналитика', 'Хранилище'] },
-      { title: 'Платформа', items: ['Telegram Bot API', 'Mini Apps', 'Платежи в Telegram', 'Уведомления'] },
-      { title: 'Эксплуатация', items: ['Мониторинг', 'Античит', 'CI/CD', 'Резервирование'], color: 'E7EEFB', textColor: '1F4FA8' },
-    ], { y: 2.0, lh: 0.66, gap: 0.12, labelW: 2.3 });
+      { title: 'Telegram (BX-007)', items: ['Telegram Bot · шлюз', 'Web App · интерфейс', 'Deep Links · рефералы', 'Уведомления'] },
+      { title: 'Вход', items: ['API Gateway', 'Auth Layer · JWT', 'Rate Limiting', 'API Versioning'] },
+      { title: 'Core Services', items: ['Auth · User', 'Match · League', 'Economy · Marketplace', 'Notification', 'Analytics · LiveOps'] },
+      { title: 'Данные', items: ['PostgreSQL · экономика, матчи', 'Redis · сессии, очереди', 'RabbitMQ / Kafka', 'WebSocket Gateway'] },
+      { title: 'Match Pipeline', items: ['Queue → Matchmaking', 'Session → Simulation', 'Validation → Storage', 'Rewards'] },
+      { title: 'Эксплуатация', items: ['Docker · оркестрация', 'Мониторинг', 'Резервное копирование', 'Аудит и антифрод'] },
+    ], { y: 1.95, lh: 0.56, gap: 0.08, labelW: 2.35, itemSize: 10.5 });
+    d.text(s, 'Принципы BX-005: Scalability · Modularity · Security First · API-Driven · Observability · Fault Tolerance · критическая логика — на сервере', { x: M, y: 5.95, w: 12.1, h: 0.4, fontSize: 10.5, color: C.soft, fontFace: F.bodyCyrillic });
   }
 
-  // 46 — Team building
+  // 46 — Squad management (BX-004)
   {
     const s = d.slide({
-      title: 'Создание команды и управление составом', status: 'DEV',
-      notes: 'ТЕЗИС: управление составом — центральная механика: выбор схемы, химия игроков и ротация определяют результат.\nМеханики: стартовый состав, схемы (4-3-3, 4-4-2, 3-5-2 и др.), «химия» сочетаний, усталость и ротация, тактические установки.\nСвязка: далее — развитие игроков.',
+      title: 'Создание команды и управление составом', status: 'DOC', source: SRC.b4,
+      notes: 'ТЕЗИС: глубина менеджмента — в сочетании состава, тактики и сыгранности.\nBX-004: Squad System — основной состав, резерв, молодёжный состав, тактические настройки. Tactical System — Formation, Pressing, Tempo, Defensive Line, Attack Focus. Chemistry System — лига, страна, клубные связи, специальные игровые комбинации. Player Identity System — Level, Reputation, Rank, Club History, Achievements, Seasonal Stats.\nСвязка: далее — развитие футболистов.',
     });
-    d.phoneImg(s, 'game-squad', 8.6, 1.75, 4.8, '!!phoneA');
-    d.caption(s, 'Концепт интерфейса · имена вымышлены', 8.0, 6.6, {});
-    d.steps(s, [
-      { title: 'Стартовый клуб', text: 'Название, эмблема, стартовый состав.' },
-      { title: 'Схема', text: 'Выбор расстановки и ролей.' },
-      { title: 'Химия', text: 'Бонус за сыгранные сочетания.' },
-      { title: 'Ротация', text: 'Усталость и форма игроков.' },
-    ], { x: M, w: 7.4, y: 2.3, titleH: 0.62, textH: 1.0, textSize: 12 });
-    d.card(s, M, 4.6, 7.4, 1.85, { name: 'a5_c' });
-    d.text(s, 'Решения игрока важнее «силы» состава', { x: M + 0.3, y: 4.8, w: 6.9, h: 0.35, fontSize: 15, bold: true, color: C.accent });
-    d.text(s, 'Баланс построен так, чтобы правильная тактика и ротация позволяли обыгрывать более «дорогие» составы — это ключ к честному PvP.', { x: M + 0.3, y: 5.22, w: 6.9, h: 1.0, fontSize: 13, color: 'D5DCE8' });
+    d.phoneImg(s, 'game-squad', 9.0, 1.85, 4.55, '!!phoneA');
+    d.caption(s, 'Концепт · имена вымышлены', 8.4, 6.55);
+    const blocks = [
+      ['Squad System', ['Основной состав', 'Резерв', 'Молодёжный состав', 'Тактические настройки']],
+      ['Tactical System', ['Formation', 'Pressing', 'Tempo', 'Defensive Line', 'Attack Focus']],
+      ['Chemistry System', ['Лига', 'Страна', 'Клубные связи', 'Специальные комбинации']],
+      ['Player Identity', ['Level · Reputation · Rank', 'Club History', 'Achievements', 'Seasonal Stats']],
+    ];
+    blocks.forEach(([t, items], i) => {
+      const x = M + (i % 2) * 4.05, y = 2.0 + Math.floor(i / 2) * 2.28;
+      d.card(s, x, y, 3.85, 2.1, { name: `a${i + 1}_c` });
+      d.text(s, t, { x: x + 0.22, y: y + 0.15, w: 3.4, h: 0.32, fontSize: 13.5, bold: true, color: C.accent, fontFace: F.bodyLatin });
+      d.bullets(s, items, x + 0.22, y + 0.58, 3.4, 1.45, { fontSize: 11.5, gap: 3 });
+    });
   }
 
-  // 47 — Player development
+  // 47 — Player development (BX-004 + rarity reconciliation with BX-013)
   {
     const s = d.slide({
-      title: 'Развитие футболистов и игровые характеристики', status: 'DEV',
-      notes: 'ТЕЗИС: развитие игроков — долгосрочная мотивация: тренировки, опыт матчей, потенциал и возраст.\nМеханики: 6 базовых характеристик; уровень и потенциал; тренировки с выбором фокуса; рост и спад формы по возрасту; редкие «таланты» из академии клуба.\nСвязка: далее — лиги, PvP и турниры.',
+      title: 'Развитие футболистов и игровые характеристики', status: 'DOC', source: SRC.b4 + ' Редкость — BX-013 v1.0.',
+      notes: 'ТЕЗИС: каждый футболист описывается 8 открытыми и 5 скрытыми характеристиками и развивается через тренировки, матчи, специальных тренеров, события и Evolution System.\nРАСХОЖДЕНИЕ ДОКУМЕНТОВ: BX-004 v0.0.19 приводит категории Common, Rare, Elite, Legendary, Iconic; утверждённый каталог BX-013 v1.0 — Common → Uncommon → Rare → Epic → Legendary → Immortal, а Elite — отдельная сезонная/премиальная категория; Iconic в BX-013 отсутствует. В презентации применяется линейка BX-013 как более поздняя и утверждённая; BX-004 требует обновления.\nСвязка: далее — лиги, PvP и турниры.',
     });
-    d.phoneImg(s, 'game-player', M, 1.75, 4.8, '!!phoneA');
-    d.caption(s, 'Концепт интерфейса · имена вымышлены', M, 6.6, {});
-    d.chart(s, pres.charts.RADAR, [{ name: 'Сейчас', labels: ['Скорость', 'Удар', 'Пас', 'Дриблинг', 'Защита', 'Физика'], values: [84, 79, 86, 88, 52, 71] }, { name: 'Потенциал', labels: ['Скорость', 'Удар', 'Пас', 'Дриблинг', 'Защита', 'Физика'], values: [88, 86, 90, 92, 58, 78] }], { x: 3.4, y: 1.95, w: 4.6, h: 4.5, showValue: false, legend: true, title: 'Профиль игрока: сейчас и потенциал', extra: { radarStyle: 'standard' } });
-    d.insight(s, 8.3, 1.95, 4.43, 4.5, 'Источники роста', ['Тренировки с выбором фокуса', 'Опыт официальных матчей', 'Возраст: пик формы 24–29 лет', 'Потенциал ограничивает максимальный рост', 'Воспитанники академии клуба — редкие таланты'], { fontSize: 12.5 });
+    d.phoneImg(s, 'game-player', M, 1.85, 4.55, '!!phoneA');
+    d.caption(s, 'Концепт · имена вымышлены', M, 6.42, { align: 'left' });
+    d.card(s, 3.05, 2.0, 4.6, 2.35, { name: 'a1_c' });
+    d.text(s, 'Характеристики · 8 открытых', { x: 3.27, y: 2.13, w: 4.2, h: 0.3, fontSize: 12.5, bold: true, color: C.accent });
+    ['Pace', 'Shooting', 'Passing', 'Dribbling', 'Defense', 'Physical', 'Stamina', 'Vision'].forEach((t, i) => d.pill(s, t, 3.27 + (i % 4) * 1.06, 2.58 + Math.floor(i / 4) * 0.42, { w: 0.98, h: 0.32, fontSize: 8.5, color: C.accent2 }));
+    d.text(s, 'Скрытые: Mentality · Consistency · Pressure Resistance · Chemistry Adaptation · Injury Resistance', { x: 3.27, y: 3.5, w: 4.2, h: 0.7, fontSize: 10.5, color: C.soft });
+    d.card(s, 3.05, 4.5, 4.6, 1.95, { name: 'a2_c' });
+    d.text(s, 'Progression System', { x: 3.27, y: 4.63, w: 4.2, h: 0.3, fontSize: 12.5, bold: true, color: C.accent, fontFace: F.bodyLatin });
+    d.bullets(s, ['Тренировки и матчи', 'Специальные тренеры', 'Игровые события', 'Evolution System'], 3.27, 5.03, 4.2, 1.35, { fontSize: 11.5, gap: 3 });
+    d.card(s, 7.85, 2.0, 4.88, 4.45, { name: 'a3_c', line: C.dot });
+    d.text(s, 'Редкость: расхождение версий', { x: 8.07, y: 2.13, w: 4.5, h: 0.3, fontSize: 12.5, bold: true, color: C.dot });
+    d.text(s, 'BX-004 · v0.0.19', { x: 8.07, y: 2.55, w: 4.5, h: 0.25, fontSize: 10, color: C.muted });
+    d.text(s, 'Common · Rare · Elite · Legendary · Iconic', { x: 8.07, y: 2.82, w: 4.5, h: 0.3, fontSize: 11.5, fontFace: F.bodyLatin, color: C.soft });
+    d.text(s, 'BX-013 · v1.0 · утверждено', { x: 8.07, y: 3.3, w: 4.5, h: 0.25, fontSize: 10, color: C.accent });
+    ['Common', 'Uncommon', 'Rare', 'Epic', 'Legendary', 'Immortal'].forEach((t, i) => {
+      const y = 3.62 + i * 0.36;
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 8.07, y, w: 1.25 + i * 0.5, h: 0.28, rectRadius: 0.06, fill: { color: i < 2 ? C.line : i < 4 ? C.outline : C.accent2 }, line: { color: C.accent2, width: 0.5 } });
+      d.text(s, t, { x: 8.15, y, w: 2.6, h: 0.28, fontSize: 9.5, bold: true, valign: 'middle', fontFace: F.bodyLatin });
+    });
+    d.text(s, '+ Elite — отдельная сезонная/премиальная категория. Применяется BX-013; BX-004 требует обновления.', { x: 8.07, y: 5.85, w: 4.5, h: 0.5, fontSize: 9.5, color: C.dot });
   }
 
-  // 48 — Leagues, PvP, tournaments
+  // 48 — Leagues, PvP, tournaments (BX-004 + BX-013)
   {
     const s = d.slide({
-      title: 'Лиги, PvP и турниры: соревновательная структура', status: 'DEV',
-      notes: 'ТЕЗИС: лестница лиг с повышением и понижением даёт каждому игроку достижимую цель каждую неделю.\nСтруктура: дивизионы Бронза → Серебро → Золото → Платина → Элита; сезон 6 недель; еженедельные кубки; рейтинг PvP (Elo-подобный); лучшие клубы Элиты получают приглашение на киберспортивные турниры (глава VI).\nПараметры (длительность сезона, число дивизионов) — проектные, уточняются по данным тестов.\nСвязка: далее — внутриигровая экономика.',
+      title: 'Лиги, PvP и турниры: соревновательная структура', status: 'DOC', source: SRC.b4 + ' Цены лиг и взносы — BX-013 v1.0.',
+      notes: 'ТЕЗИС: соревновательная структура объединяет шесть типов матчей, четыре типа лиг и честный матчмейкинг.\nBX-004: Quick Match, Ranked, Tournament, League, Friendly, Event Match; лиги Public, Private, Competitive, Sponsored; матчмейкинг учитывает ранг, силу команды, скрытый MMR, поведение и регион задержки.\nBX-013: системные лиги бесплатно (ранги 19–100); Fan League — создание 69 FTXcoin, Pro — 109, Master — 149; дополнительные 4 места до лимита 48 — 20 FTXcoin. Взносы за 7-дневный сезон: Fan 5 (2 создателю / 2 в призовой фонд / 1 в казну), Pro 8 (3/3/2), Master 12 (5/5/2).\nВажно: взносы в FTXcoin — расход внутриигровой валюты и оборот между пользователями, а не денежная выручка.\nСвязка: далее — экономика.',
     });
-    d.phoneImg(s, 'game-league', 9.15, 1.75, 4.8, '!!phoneA');
-    d.caption(s, 'Концепт интерфейса · названия вымышлены', 8.5, 6.6, {});
-    const divs = [['Элита', C.accent, 'В киберспорт'], ['Платина', '7FE3B5', 'Повышение: топ-3'], ['Золото', C.accent2, 'Повышение: топ-3'], ['Серебро', '7FB2FF', 'Повышение: топ-3'], ['Бронза', C.steel, 'Старт нового клуба']];
-    divs.forEach(([t, col, x2], i) => {
-      const w = 4.0 + i * 0.6, x = M + 4.2 - w / 2, y = 2.0 + i * 0.86;
-      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w, h: 0.72, rectRadius: 0.1, fill: { color: C.surface }, line: { color: col, width: 1.25 }, objectName: `a${i + 1}_d` });
-      d.text(s, t, { x: x + 0.25, y, w: 1.8, h: 0.72, fontSize: 14, bold: true, color: col, valign: 'middle', objectName: `a${i + 1}_t` });
-      d.text(s, x2, { x: x + 1.9, y, w: w - 2.1, h: 0.72, fontSize: 11.5, color: 'B9C3D4', valign: 'middle', align: 'right', objectName: `a${i + 1}_x` });
-    });
-    d.text(s, 'Сезон — 6 недель · еженедельные кубки · рейтинг PvP · параметры проектные', { x: M, y: 6.4, w: 8, h: 0.3, fontSize: 11, color: '8D99AE' });
+    d.phoneImg(s, 'game-league', 9.15, 1.85, 4.55, '!!phoneA');
+    d.caption(s, 'Концепт интерфейса', 8.5, 6.55);
+    d.card(s, M, 2.0, 4.15, 2.05, { name: 'a1_c' });
+    d.text(s, 'Типы матчей', { x: M + 0.22, y: 2.13, w: 3.7, h: 0.3, fontSize: 12.5, bold: true, color: C.accent });
+    ['Quick Match', 'Ranked', 'Tournament', 'League', 'Friendly', 'Event Match'].forEach((t, i) => d.pill(s, t, M + 0.22 + (i % 2) * 1.85, 2.55 + Math.floor(i / 2) * 0.44, { w: 1.75, h: 0.34, fontSize: 9, color: C.accent2 }));
+    d.card(s, 4.95, 2.0, 3.85, 2.05, { name: 'a2_c' });
+    d.text(s, 'Типы лиг · PvP', { x: 5.17, y: 2.13, w: 3.4, h: 0.3, fontSize: 12.5, bold: true, color: C.accent });
+    d.text(s, 'Public · Private · Competitive · Sponsored', { x: 5.17, y: 2.5, w: 3.45, h: 0.5, fontSize: 11, fontFace: F.bodyLatin, color: C.text });
+    d.text(s, 'Матчмейкинг: ранг, сила команды, скрытый MMR, поведение, регион задержки', { x: 5.17, y: 3.05, w: 3.45, h: 0.85, fontSize: 10.5, color: C.soft });
+    d.table(s, [
+      ['Лига (BX-013)', 'Создание', 'Взнос / 7 дней', 'Создателю · фонд · казна'],
+      ['Системная (ранги 19–100)', 'бесплатно', '—', '—'],
+      ['Fan League', '69 FTXcoin', '5 FTXcoin', '2 · 2 · 1'],
+      ['Pro League', '109 FTXcoin', '8 FTXcoin', '3 · 3 · 2'],
+      ['Master League', '149 FTXcoin', '12 FTXcoin', '5 · 5 · 2'],
+    ], { x: M, y: 4.25, w: 8.2, colW: [2.6, 1.6, 1.7, 2.3], rowH: 0.36, size: 10.5, hSize: 10, boldFirstCol: true });
+    d.text(s, '+4 места до лимита 48 — 20 FTXcoin · взносы — оборот внутриигровой валюты, не выручка', { x: M, y: 6.12, w: 8.2, h: 0.28, fontSize: 9.5, color: C.dot });
   }
 
-  // 49 — In-game economy
+  // 49 — In-game economy (BX-003 + BX-013 + brandbook)
   {
     const s = d.slide({
-      dark: false, title: 'Внутриигровая экономика: источники, стоки и строгое разделение валют и выручки', status: 'CONFIRM',
-      notes: 'ТЕЗИС: экономика сбалансирована источниками и стоками; внутриигровая валюта никогда не считается выручкой компании.\nМодель: мягкая валюта FX Coins зарабатывается игрой и тратится на трансферы, тренировки и стадион; премиальные покупки совершаются за реальные деньги через платёжные механизмы платформы. Выручка признаётся только по фактическим денежным платежам (за вычетом комиссий платформ — в себестоимости).\nВАЖНО: вывод валюты в деньги не предусмотрен — это исключает признаки азартных игр; модель требует юридической проверки (защита прав потребителей, налогообложение цифровых товаров).\nСвязка: далее — маркетплейс.',
+      title: 'Внутриигровая экономика: валюты отдельно от выручки', status: 'DOC', source: SRC.b3 + ' Терминология — FootureX Brand Book v1.0.',
+      notes: 'ТЕЗИС: экономика держится на контроле эмиссии и балансе источников и расходов; выручка — только реальные платежи через Telegram Stars / TON (BX-013).\nCoins — мягкая валюта: источники — матчи, ежедневные награды, задания, достижения, сезоны, события; вывод из обращения — Upgrades, Contracts, League Participation, Crafting, Repair, Reroll (BX-003).\nFTXcoin — премиальная внутриигровая валюта без листинга (BX-013).\nТелеграм Stars / TON — платёжные механизмы (BX-013); TON — внешний механизм будущих blockchain-операций (BX-003); blockchain не обязателен для участия.\nFOOTX — перспективный внешний токен позднего этапа (BX-013; брендбук: с листингом на бирже).\nРАСХОЖДЕНИЯ: (1) роль FTXcoin: BX-003 — стратегическая игровая экономика; BX-013 — премиальная валюта, продаваемая пакетами; брендбук — валюта для управления, стейкинга и призовых внутри турниров. (2) BX-003 перечисляет Stars и TON среди валют, BX-013 — как платёжные механизмы. Требуется единая редакция.\nСвязка: далее — маркетплейс.',
     });
-    const box = (x, y, w, h, title, items, col, name) => {
-      d.card(s, x, y, w, h, { name });
-      d.text(s, title, { x: x + 0.25, y: y + 0.2, w: w - 0.5, h: 0.35, fontSize: 14, bold: true, color: col });
-      d.bullets(s, items, x + 0.25, y + 0.65, w - 0.5, h - 0.8, { fontSize: 12, gap: 5 });
-    };
-    box(M, 2.0, 3.7, 3.0, 'Источники FX Coins', ['Победы в матчах', 'Задания дня и сезона', 'Призы турниров', 'Продажа игроков на рынке'], '0E9F64', 'a1_src');
-    s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 4.75, y: 2.85, w: 3.83, h: 1.3, rectRadius: 0.65, fill: { color: '0E1521' }, line: { color: C.accent, width: 1.5 }, objectName: 'a2_core' });
-    d.text(s, 'FX Coins', { x: 4.75, y: 2.95, w: 3.83, h: 0.55, fontSize: 22, fontFace: F.displayLatin, color: C.accent, align: 'center' });
-    d.text(s, 'внутриигровая валюта · не деньги', { x: 4.75, y: 3.5, w: 3.83, h: 0.4, fontSize: 11, color: 'C9D3E3', align: 'center' });
-    s.addShape(pres.shapes.LINE, { x: 4.35, y: 3.5, w: 0.38, h: 0, line: { color: '0E9F64', width: 2, endArrowType: 'triangle' } });
-    s.addShape(pres.shapes.LINE, { x: 8.6, y: 3.5, w: 0.38, h: 0, line: { color: 'C98A16', width: 2, endArrowType: 'triangle' } });
-    box(9.03, 2.0, 3.7, 3.0, 'Стоки FX Coins', ['Трансферы и комиссия рынка', 'Тренировки и восстановление', 'Развитие стадиона и базы', 'Вступительные взносы турниров'], 'C98A16', 'a3_snk');
-    d.card(s, M, 5.25, W - 2 * M, 1.25, { name: 'a4_rev', fill: 'FFF8EA', line: 'F2C46B' });
-    d.text(s, [{ text: 'Выручка компании ≠ внутриигровая валюта. ', options: { bold: true, color: '8A5A00' } }, { text: 'Выручка — только реальные платежи игроков за премиальные покупки и рекламные доходы. Обмен FX Coins на деньги не предусмотрен. Модель требует юридической проверки.', options: { color: '3A4456' } }], { x: M + 0.3, y: 5.25, w: 11.5, h: 1.25, fontSize: 13, valign: 'middle' });
+    d.table(s, [
+      ['Валюта / механизм', 'Тип', 'Роль в экосистеме', 'Документ'],
+      ['Coins', 'мягкая внутриигровая', 'улучшения, контракты, покупки, восстановление', 'BX-003, BX-013'],
+      ['FTXcoin', 'премиальная, без листинга', 'наборы, лиги, создание игроков; не выводится в деньги', 'BX-013 · брендбук'],
+      ['Telegram Stars', 'платёжный механизм', 'Premium Pass, премиум-функции, косметика', 'BX-003, BX-013'],
+      ['TON', 'внешний механизм', 'платежи; будущие blockchain-операции и цифровое владение', 'BX-003, BX-013'],
+      ['FOOTX', 'внешний токен (поздний этап)', 'перспектива; рыночная стоимость, листинг', 'BX-013 · брендбук'],
+    ], { x: M, y: 2.0, w: 8.15, colW: [1.75, 1.95, 3.15, 1.3], rowH: 0.48, size: 10.5, hSize: 10, boldFirstCol: true });
+    d.card(s, M, 5.05, 8.15, 1.4, { name: 'a2_c' });
+    d.text(s, 'Coins: источники → сток', { x: M + 0.22, y: 5.15, w: 7.6, h: 0.3, fontSize: 12, bold: true, color: C.accent });
+    d.text(s, 'Матчи · ежедневные награды · задания · достижения · сезоны · события  →  Upgrades · Contracts · League Participation · Crafting · Repair · Reroll', { x: M + 0.22, y: 5.5, w: 7.7, h: 0.85, fontSize: 10.5, color: C.soft });
+    d.card(s, 8.95, 2.0, 3.78, 2.35, { name: 'a3_c' });
+    d.text(s, 'Принципы BX-003', { x: 9.17, y: 2.13, w: 3.4, h: 0.3, fontSize: 12.5, bold: true, color: C.accent });
+    d.bullets(s, ['Контроль эмиссии', 'Баланс источников и расходов', 'Без гиперинфляции и чрезмерного pay-to-win', 'Защита ценности прогресса'], 9.17, 2.53, 3.4, 1.75, { fontSize: 10.5, gap: 3 });
+    d.card(s, 8.95, 4.5, 3.78, 1.95, { name: 'a4_c', line: C.dot });
+    d.text(s, 'Требует единой редакции', { x: 9.17, y: 4.62, w: 3.4, h: 0.3, fontSize: 12, bold: true, color: C.dot });
+    d.text(s, 'Роль FTXcoin различается в BX-003, BX-013 и брендбуке (премиальная валюта / управление, стейкинг, призовые). Stars и TON: валюта или платёжный механизм.', { x: 9.17, y: 4.98, w: 3.42, h: 1.4, fontSize: 9.5, color: C.soft });
   }
 
-  // 50 — Marketplace & digital assets
+  // 50 — Marketplace & digital assets (BX-013)
   {
     const s = d.slide({
-      title: 'Marketplace и цифровые активы: торговля внутри игры по правилам', status: 'CONFIRM',
-      notes: 'ТЕЗИС: рынок игроков оживляет экономику, но работает только во внутриигровой валюте и под антифрод-контролем.\nПравила: торговля за FX Coins; комиссия рынка — сток валюты; ценовые коридоры против отмывания; запрет передачи активов за реальные деньги вне игры. Цифровые активы — лицензия на использование внутри игры, не собственность и не финансовый инструмент.\nТРЕБУЕТСЯ ПОДТВЕРЖДЕНИЕ: правовой режим цифровых предметов и любые блокчейн-механики (если рассматриваются) — только после юридического заключения.\nСвязка: далее — LiveOps и удержание.',
+      title: 'Marketplace и цифровые активы: контролируемый рынок', status: 'DOC', source: SRC.b13 + ' Blockchain — BX-003, BX-008.',
+      notes: 'ТЕЗИС: Controlled Marketplace (BX-001) оживляет экономику, но строго отделяет доходы платформы от расходов валют и оборота между пользователями.\nBX-013: продажа игроков и активов, аренда, крафт, слияние, скаутинг; косметика, коллекционные дропы, турниры, сезонные награды, восстановление энергии, статусные преимущества.\nИсключено каталогом: прямой вывод FTXcoin в реальные деньги, конвертация Coins в FTXcoin, нечестные лутбоксы, ставки.\nBlockchain и токенизированная экономика развиваются только после подтверждения устойчивости основного продукта (BX-008) и не являются обязательным условием участия (BX-003).\nСвязка: далее — LiveOps и удержание.',
     });
-    d.phoneImg(s, 'game-market', M, 1.75, 4.8, '!!phoneA');
-    d.caption(s, 'Концепт интерфейса · имена вымышлены', M, 6.6, {});
-    await d.cards(s, [
-      { icon: 'LuCoins', title: 'Только FX Coins', text: 'Покупка и продажа игроков, экипировки и элементов стадиона — за внутриигровую валюту.' },
-      { icon: 'LuPercent', title: 'Комиссия рынка', text: 'Часть каждой сделки выводится из экономики — защита от инфляции.' },
-      { icon: 'LuShieldCheck', title: 'Антифрод', text: 'Ценовые коридоры, лимиты, поиск связанных аккаунтов.' },
-      { icon: 'LuScale', title: 'Правовой режим', text: 'Цифровые предметы — лицензия на использование в игре. Требует юридического заключения.' },
-    ], { cols: 2, x: 3.4, w: 9.33, y: 1.95, h: 4.5, iconLeft: true });
+    d.phoneImg(s, 'game-market', M, 1.85, 4.55, '!!phoneA');
+    d.caption(s, 'Концепт · имена вымышлены', M, 6.42, { align: 'left' });
+    const three = [['Revenue', 'Реальные денежные поступления через Telegram Stars / TON', C.accent2], ['Sink', 'Расход внутренней валюты — сам по себе не выручка', C.accent], ['Оборот P2P', 'Обмен между пользователями внутри платформы', C.dot]];
+    three.forEach(([t, x2, col], i) => {
+      const x = 3.05 + i * 3.25;
+      d.card(s, x, 2.0, 3.05, 1.65, { name: `a${i + 1}_c`, line: col });
+      d.text(s, t, { x: x + 0.2, y: 2.12, w: 2.7, h: 0.4, fontSize: 15, fontFace: /[А-яЁё]/.test(t) ? F.displayCyrillic : F.displayLatin, color: col });
+      d.text(s, x2, { x: x + 0.2, y: 2.6, w: 2.7, h: 0.95, fontSize: 11, color: C.soft });
+    });
+    d.card(s, 3.05, 3.85, 4.7, 2.6, { name: 'a4_c' });
+    d.text(s, 'Механики Marketplace', { x: 3.27, y: 3.98, w: 4.3, h: 0.3, fontSize: 12.5, bold: true, color: C.accent });
+    d.bullets(s, ['Продажа игроков и активов', 'Аренда', 'Крафт и слияние', 'Скаутинг', 'Коллекционные дропы и косметика'], 3.27, 4.4, 4.3, 1.95, { fontSize: 11, gap: 3 });
+    d.card(s, 7.95, 3.85, 4.78, 2.6, { name: 'a5_c', line: C.dot });
+    d.text(s, 'Исключено каталогом BX-013', { x: 8.17, y: 3.98, w: 4.4, h: 0.3, fontSize: 12.5, bold: true, color: C.dot });
+    d.bullets(s, ['Вывод FTXcoin в реальные деньги', 'Конвертация Coins → FTXcoin', 'Нечестные лутбоксы', 'Ставки', 'Blockchain — не обязательное условие участия'], 8.17, 4.4, 4.4, 1.95, { fontSize: 11, gap: 3 });
   }
 
-  // 51 — LiveOps
+  // 51 — LiveOps & retention (BX-004 + BX-013)
   {
     const s = d.slide({
-      title: 'LiveOps, сезоны и удержание игроков', status: 'DEV',
-      notes: 'ТЕЗИС: удержание создаётся ритмом — ежедневные задания, недельные кубки, шестинедельные сезоны и событийный календарь.\nМетрики: D1/D7/D30 retention, DAU/MAU, доля платящих, ARPPU. Целевые значения устанавливаются после soft launch на реальных данных — в презентации не приводятся, чтобы не выдавать допущения за факт.\nСвязка: далее — план выпуска.',
+      title: 'LiveOps, сезоны и удержание игроков', status: 'DOC', source: SRC.b4 + ' Battle Pass — BX-013 v1.0.',
+      notes: 'ТЕЗИС: удержание строится на сезонном ритме и честной ценности, а не на принуждении.\nRetention Systems (BX-004): Daily Rewards, Missions, Leagues, Battle Pass, Tournaments. New Player Experience: Tutorial → Starter Squad → First Match → Rewards → League Introduction. Anti-Cheat: серверная проверка действий, поведенческий анализ, защита от манипуляций статистикой.\nBattle Pass (BX-013): Free — бесплатно; Premium Pass — $3.99 за сезон 14 дней, 100 уровней.\nЦелевые значения удержания (D1/D7/D30) в документах не заданы — требуется подтверждение после тестов.\nСвязка: далее — план развития и выпуска.',
     });
-    d.phoneImg(s, 'game-season', 9.15, 1.75, 4.8, '!!phoneA');
-    d.caption(s, 'Концепт интерфейса', 8.5, 6.6, {});
-    const ring = [['День', 'Задания дня, награды за вход, тренировка'], ['Неделя', 'Кубок выходного дня, рейтинг недели'], ['Сезон · 6 недель', 'Пропуск сезона, повышение и понижение в лигах'], ['События', 'Дерби, праздники, реальные футбольные события']];
-    ring.forEach(([t, x2], i) => {
-      const y = 2.0 + i * 1.12;
-      d.card(s, M, y, 8.0, 0.95, { name: `a${i + 1}_c` });
-      d.text(s, t, { x: M + 0.3, y, w: 2.6, h: 0.95, fontSize: 15, bold: true, color: C.accent, valign: 'middle', objectName: `a${i + 1}_t` });
-      d.text(s, x2, { x: M + 3.0, y, w: 4.8, h: 0.95, fontSize: 13, color: 'D5DCE8', valign: 'middle', objectName: `a${i + 1}_d` });
+    d.phoneImg(s, 'game-season', 9.15, 1.85, 4.55, '!!phoneA');
+    d.caption(s, 'Концепт интерфейса', 8.5, 6.55);
+    d.card(s, M, 2.0, 4.0, 2.2, { name: 'a1_c' });
+    d.text(s, 'Retention Systems', { x: M + 0.22, y: 2.13, w: 3.6, h: 0.3, fontSize: 12.5, bold: true, color: C.accent, fontFace: F.bodyLatin });
+    d.bullets(s, ['Daily Rewards', 'Missions', 'Leagues', 'Battle Pass', 'Tournaments'], M + 0.22, 2.53, 3.6, 1.6, { fontSize: 11, gap: 2 });
+    d.card(s, 4.8, 2.0, 3.95, 2.2, { name: 'a2_c', line: C.accent2 });
+    d.text(s, 'Battle Pass · BX-013', { x: 5.02, y: 2.13, w: 3.5, h: 0.3, fontSize: 12.5, bold: true, color: C.accent });
+    d.text(s, '$3.99', { x: 5.02, y: 2.55, w: 2, h: 0.6, fontSize: 30, fontFace: F.displayLatin, color: C.text });
+    d.text(s, 'Premium Pass · сезон 14 дней · 100 уровней · Free Pass — бесплатно', { x: 5.02, y: 3.25, w: 3.5, h: 0.8, fontSize: 11, color: C.soft });
+    d.text(s, 'New Player Experience', { x: M, y: 4.45, w: 6, h: 0.3, fontSize: 12.5, bold: true, color: C.accent, fontFace: F.bodyLatin });
+    ['Tutorial', 'Starter Squad', 'First Match', 'Rewards', 'League Intro'].forEach((t, i) => {
+      const x = M + i * 1.63;
+      d.pill(s, t, x, 4.88, { w: 1.5, h: 0.42, fontSize: 9.5, color: C.accent2, fill: i === 0 ? C.outline : C.surface });
+      if (i < 4) s.addShape(pres.shapes.LINE, { x: x + 1.5, y: 5.09, w: 0.13, h: 0, line: { color: C.accent, width: 1.25, endArrowType: 'triangle' } });
     });
-    d.text(s, 'Ключевые метрики: D1 / D7 / D30 retention · DAU/MAU · доля платящих · ARPPU — цели утверждаются после soft launch', { x: M, y: 6.48, w: 8.2, h: 0.3, fontSize: 10.5, color: '8D99AE' });
+    d.card(s, M, 5.55, 8.15, 0.9, { name: 'a3_c' });
+    d.text(s, [{ text: 'Принцип BX-004: ', options: { bold: true, color: C.accent } }, { text: 'пользователь возвращается ради интересного игрового опыта, а не из-за искусственного принуждения. Anti-Cheat — серверная проверка, поведенческий анализ.' }], { x: M + 0.22, y: 5.55, w: 7.8, h: 0.9, fontSize: 11.5, valign: 'middle', color: 'D3D9E5' });
   }
 
-  // 52 — Release plan
+  // 52 — Release plan (BX-001 stages + BX-008 triggers)
   {
     const s = d.slide({
-      title: 'План развития и выпуска игрового продукта', status: 'CONFIRM',
-      notes: 'ТЕЗИС: выпуск идёт по воротам качества — переход к следующему этапу только при достижении метрик.\nЭтапы: прототип → закрытая альфа → soft launch в Узбекистане → запуск в Центральной Азии → сезоны и киберспорт → новые рынки СНГ.\nТРЕБУЕТСЯ ПОДТВЕРЖДЕНИЕ: текущий этап разработки и календарные даты — по данным команды продукта.\nСвязка: глава VI — сообщество и киберспорт.',
+      title: 'План развития и выпуска игрового продукта', status: 'DOC', source: SRC.b1 + ' Переходы между этапами — BX-008 Investment & Partnership Strategy, v0.4.92.',
+      notes: 'ТЕЗИС: продукт развивается по этапам BX-001; переход к росту — только после подтверждения удержания, экономики и стабильной аудитории (BX-008).\nFoundation: Telegram Web App, базовый gameplay, регистрация, игровая экономика, первые сезоны, тестовые турниры, MVP сайта.\nEcosystem Expansion: Marketplace, League System, Social Systems, игровые события, аналитика, масштабирование инфраструктуры.\nДалее (BX-008): Growth — новые рынки, инфраструктура, конкурентные системы; Ecosystem Expansion — медиа, киберспорт, blockchain-интеграции, стратегические партнёрства, футбольная инфраструктура.\nКалендарные даты в документах не указаны — требуются от команды.\nСвязка: глава VI — сообщество и киберспорт.',
     });
-    d.steps(s, [
-      { title: 'Прототип', text: 'Ядро: состав, матч, прогресс. Проверка интереса.' },
-      { title: 'Закрытая альфа', text: 'Ограниченная группа, баланс экономики, стабильность.' },
-      { title: 'Soft launch · UZ', text: 'Открытый запуск в Узбекистане, метрики удержания.' },
-      { title: 'Центральная Азия', text: 'Локализация, платежи, маркетинг в регионе.' },
-      { title: 'Сезоны и киберспорт', text: 'Полный LiveOps-цикл и турниры с призами.' },
-      { title: 'СНГ и далее', text: 'Новые рынки при подтверждённой экономике.' },
-    ], { y: 2.3, titleH: 0.62, textH: 1.5, highlight: 0 });
-    d.card(s, M, 5.15, W - 2 * M, 1.3, { name: 'a7_g' });
-    d.text(s, [{ text: 'Ворота качества: ', options: { bold: true, color: C.accent } }, { text: 'каждый этап открывается только после достижения целевых метрик предыдущего — удержания, стабильности, платящей доли и окупаемости привлечения игроков. Текущий этап и даты подтверждает команда продукта.' }], { x: M + 0.3, y: 5.15, w: 11.5, h: 1.3, fontSize: 13.5, valign: 'middle', color: 'D5DCE8' });
+    d.timeline(s, [
+      { label: 'Foundation', title: 'Запуск', text: 'Telegram Web App · базовый gameplay · регистрация · экономика · первые сезоны · тестовые турниры · MVP сайта' },
+      { label: 'Expansion', title: 'Экосистема', text: 'Marketplace · League System · Social Systems · события · аналитика · масштабирование', color: C.accent2 },
+      { label: 'Growth', title: 'Рост', text: 'После подтверждения retention, экономики и аудитории: новые рынки, инфраструктура, конкурентные системы', color: C.dot },
+      { label: 'Ecosystem+', title: 'Расширение', text: 'Медиа, киберспорт, blockchain-интеграции, партнёрства, футбольная инфраструктура', color: C.muted },
+    ], { y: 2.95, titleH: 0.42, textH: 1.6, textSize: 11.5, labelSize: 14 });
+    d.card(s, M, 5.35, W - 2 * M, 1.1, { name: 'a5_g' });
+    d.text(s, [{ text: 'Условие перехода (BX-008): ', options: { bold: true, color: C.accent } }, { text: 'рост инвестиций и масштаба — только после подтверждения удержания пользователей, работоспособности экономики и стабильной аудитории. Даты этапов — требуется подтверждение команды.' }], { x: M + 0.3, y: 5.35, w: 11.5, h: 1.1, fontSize: 13, valign: 'middle', color: 'D3D9E5' });
   }
 };

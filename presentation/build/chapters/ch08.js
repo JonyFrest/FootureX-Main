@@ -6,10 +6,10 @@ const { opener, renderPanel } = require('./common');
 function box(d, s, x, y, w, h, t, sub, o = {}) {
   s.addShape(d.pres.shapes.ROUNDED_RECTANGLE, { x, y, w, h, rectRadius: 0.08, fill: { color: o.fill || (d.dark ? C.surface : 'FFFFFF') }, line: { color: o.line || (d.dark ? C.line : C.lightLine), width: o.lw || 1 }, objectName: o.name });
   d.text(s, t, { x: x + 0.1, y: y + (sub ? 0.1 : 0), w: w - 0.2, h: sub ? 0.32 : h, fontSize: o.fs || 12, bold: true, align: 'center', valign: sub ? 'top' : 'middle', color: o.color });
-  if (sub) d.text(s, sub, { x: x + 0.1, y: y + 0.44, w: w - 0.2, h: 0.26, fontSize: o.sfs || 9.5, align: 'center', valign: 'top', color: o.subColor || (d.dark ? '8D99AE' : '5B6578') });
+  if (sub) d.text(s, sub, { x: x + 0.1, y: y + 0.44, w: w - 0.2, h: 0.26, fontSize: o.sfs || 9.5, align: 'center', valign: 'top', color: o.subColor || (d.dark ? '8A93A6' : '8A93A6') });
 }
-function vline(d, s, x, y1, y2) { s.addShape(d.pres.shapes.LINE, { x, y: y1, w: 0, h: y2 - y1, line: { color: d.dark ? '3A4760' : 'B7C1D1', width: 1 } }); }
-function hline(d, s, x1, x2, y) { s.addShape(d.pres.shapes.LINE, { x: x1, y, w: x2 - x1, h: 0, line: { color: d.dark ? '3A4760' : 'B7C1D1', width: 1 } }); }
+function vline(d, s, x, y1, y2) { s.addShape(d.pres.shapes.LINE, { x, y: y1, w: 0, h: y2 - y1, line: { color: d.dark ? '273B51' : '273B51', width: 1 } }); }
+function hline(d, s, x1, x2, y) { s.addShape(d.pres.shapes.LINE, { x: x1, y, w: x2 - x1, h: 0, line: { color: d.dark ? '273B51' : '273B51', width: 1 } }); }
 
 module.exports = async (d, pres) => {
   // 71 — FC FootureX concept
@@ -32,7 +32,7 @@ module.exports = async (d, pres) => {
       const w = 4.2 + i * 0.9, x = M + (7.8 - w) / 2, y = 2.05 + i * 1.1;
       s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w, h: 0.92, rectRadius: 0.1, fill: { color: C.surface }, line: { color: col, width: 1.25 }, objectName: `a${4 - i}_l` });
       d.text(s, t, { x: x + 0.25, y, w: w - 0.5, h: 0.5, fontSize: 15, bold: true, color: col, valign: 'bottom', objectName: `a${4 - i}_t` });
-      d.text(s, x2, { x: x + 0.25, y: y + 0.5, w: w - 0.5, h: 0.35, fontSize: 11.5, color: 'B9C3D4', objectName: `a${4 - i}_d` });
+      d.text(s, x2, { x: x + 0.25, y: y + 0.5, w: w - 0.5, h: 0.35, fontSize: 11.5, color: 'B8C1D4', objectName: `a${4 - i}_d` });
     });
     d.insight(s, 8.75, 2.05, 3.98, 4.35, 'Принципы', ['Бюджет растёт только вслед за результатом', 'Ставка на воспитанников Football Academy', 'Решения по составу — с опорой на данные', 'Соответствие лицензионным требованиям — до заявки'], { fontSize: 12.5 });
   }
@@ -40,10 +40,10 @@ module.exports = async (d, pres) => {
   // 73 — Club org structure
   {
     const s = d.slide({
-      dark: false, title: 'Организационная структура клуба', status: 'FRAME',
+      title: 'Организационная структура клуба', status: 'FRAME',
       notes: 'ТЕЗИС: структура разделяет спортивный, коммерческий и операционный блоки с чёткой ответственностью.\nСтатус: целевая структура для этапа профессионального клуба; на старте функции совмещаются.\nСвязка: далее — FootureX Football Academy.',
     });
-    box(d, s, 5.17, 2.0, 3.0, 0.75, 'Совет клуба', 'стратегия и бюджет', { name: 'a1_b', fill: '0E1521', color: 'FFFFFF', line: '0E1521', subColor: 'A9B4C7' });
+    box(d, s, 5.17, 2.0, 3.0, 0.75, 'Совет клуба', 'стратегия и бюджет', { name: 'a1_b', fill: '142A70', color: 'FFFFFF', line: '142A70', subColor: 'B8C1D4' });
     vline(d, s, 6.67, 2.75, 3.0);
     box(d, s, 5.17, 3.0, 3.0, 0.75, 'Генеральный директор', 'управление клубом', { name: 'a2_b', line: C.accent, lw: 1.5 });
     vline(d, s, 6.67, 3.75, 4.05); hline(d, s, 2.2, 11.13, 4.05);
@@ -54,7 +54,7 @@ module.exports = async (d, pres) => {
       box(d, s, x, 4.25, 3.2, 0.62, t, null, { name: `a${i + 3}_b`, fs: 12.5 });
       items.forEach((it, j) => {
         const yy = 5.0 + j * 0.34;
-        d.text(s, '— ' + it, { x: x + 0.3, y: yy, w: 2.9, h: 0.3, fontSize: 11.5, color: '3A4456' });
+        d.text(s, '— ' + it, { x: x + 0.3, y: yy, w: 2.9, h: 0.3, fontSize: 11.5, color: 'B8C1D4' });
       });
     });
   }
@@ -63,7 +63,7 @@ module.exports = async (d, pres) => {
   {
     const s = renderPanel(d, {
       img: 'renders/academy-aerial.jpg', side: 'left', title: 'FootureX Football Academy — детско-юношеская академия', status: 'CONCEPT', scale: 1.05, dx: 1.5,
-      notes: 'ТЕЗИС: академия — фундамент футбольной стратегии: воспитание игроков дешевле покупки и создаёт долгосрочную стоимость.\nВ иллюстративной модели — пилот детско-юношеских программ с Года 4 на арендуемой базе (выручка $80–160 тыс., затраты $250–350 тыс. в год, CAPEX на улучшения $500 тыс.).\nСтатус: концепция; визуализация — концептуальная (4 поля, крытый манеж, учебный корпус).\nСвязка: далее — подготовка молодых футболистов.',
+      notes: 'ТЕЗИС: академия — фундамент футбольной стратегии: воспитание игроков дешевле покупки и создаёт долгосрочную стоимость.\nФормат старта — пилот детско-юношеских программ на арендуемой базе; бюджет, выручка и CAPEX не предоставлены — требуется подтверждение.\nСтатус: концепция; визуализация — концептуальная (4 поля, крытый манеж, учебный корпус).\nСвязка: далее — подготовка молодых футболистов.',
     });
     await d.cards(s, [
       { icon: 'LuGoal', title: 'Подготовка игроков', text: 'Возрастные группы от 8 до 19 лет, единая игровая модель.' },
@@ -85,9 +85,9 @@ module.exports = async (d, pres) => {
       s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w: 2.85, h, rectRadius: 0.1, fill: { color: C.surface }, line: { color: col, width: 1.25 }, objectName: `a${i + 1}_b` });
       d.text(s, age, { x: x + 0.22, y: y + 0.18, w: 2.4, h: 0.45, fontSize: 18, fontFace: F.displayLatin, color: col, objectName: `a${i + 1}_a` });
       d.text(s, t, { x: x + 0.22, y: y + 0.65, w: 2.4, h: 0.32, fontSize: 14, bold: true, objectName: `a${i + 1}_t` });
-      d.text(s, x2, { x: x + 0.22, y: y + 1.0, w: 2.45, h: 0.6, fontSize: 11, color: 'B9C3D4', objectName: `a${i + 1}_d` });
+      d.text(s, x2, { x: x + 0.22, y: y + 1.0, w: 2.45, h: 0.6, fontSize: 11, color: 'B8C1D4', objectName: `a${i + 1}_d` });
     });
-    d.text(s, 'Учёба в школе и языки — обязательная часть программы на всех этапах', { x: M, y: 2.05, w: 7, h: 0.35, fontSize: 13, italic: true, color: 'C9D3E3' });
+    d.text(s, 'Учёба в школе и языки — обязательная часть программы на всех этапах', { x: M, y: 2.05, w: 7, h: 0.35, fontSize: 13, italic: true, color: 'B8C1D4' });
   }
 
   // 76 — Talent search
@@ -99,9 +99,9 @@ module.exports = async (d, pres) => {
     const fn = [['Фестивали и школьные турниры', 'регионы Узбекистана'], ['Видео- и цифровой отбор', 'загрузка видео, тесты, данные'], ['Просмотровые сборы', 'в Ташкенте и регионах'], ['Пробный период', 'тренировки в группе'], ['Зачисление', 'индивидуальный план развития']];
     fn.forEach(([t, x2], i) => {
       const w = 7.4 - i * 1.1, x = M + (7.4 - w) / 2, y = 2.0 + i * 0.88;
-      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w, h: 0.74, rectRadius: 0.1, fill: { color: i === 4 ? '0F2E22' : C.surface }, line: { color: i === 4 ? C.accent : C.line, width: 1 }, objectName: `a${i + 1}_f` });
+      s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x, y, w, h: 0.74, rectRadius: 0.1, fill: { color: i === 4 ? '142A70' : C.surface }, line: { color: i === 4 ? C.accent : C.line, width: 1 }, objectName: `a${i + 1}_f` });
       d.text(s, t, { x, y, w, h: 0.42, fontSize: 13, bold: true, align: 'center', valign: 'bottom', color: i === 4 ? C.accent : C.text, objectName: `a${i + 1}_t` });
-      d.text(s, x2, { x, y: y + 0.42, w, h: 0.28, fontSize: 10, align: 'center', color: '8D99AE', objectName: `a${i + 1}_d` });
+      d.text(s, x2, { x, y: y + 0.42, w, h: 0.28, fontSize: 10, align: 'center', color: '8A93A6', objectName: `a${i + 1}_d` });
     });
     d.insight(s, 8.4, 2.0, 4.33, 4.4, 'Этика отбора', ['Просмотры бесплатны для семей', 'Согласие родителей на участие и обработку данных', 'Защита персональных данных несовершеннолетних', 'Прозрачные критерии зачисления'], { fontSize: 12.5 });
   }
@@ -155,7 +155,7 @@ module.exports = async (d, pres) => {
   // 80 — Transfer strategy
   {
     const s = d.slide({
-      dark: false, title: 'Трансферная стратегия: развивать, раскрывать, продавать', status: 'CONCEPT',
+      title: 'Трансферная стратегия: развивать, раскрывать, продавать', status: 'CONCEPT',
       notes: 'ТЕЗИС: модель «воспитать и продать» — устойчивый источник дохода для клубов развивающихся рынков; регламент ФИФА защищает права клуба-воспитателя.\nМеханизмы ФИФА (Регламент по статусу и трансферам игроков): компенсация за подготовку — при первом профессиональном контракте и переходах до 23 лет за годы подготовки 12–21 лет; механизм солидарности — до 5% суммы международного трансфера распределяется клубам, готовившим игрока в возрасте 12–23 лет.\nКонкретные условия — по актуальной редакции регламента ФИФА.\nСвязка: далее — перспективная модель лиги.',
       source: 'Источник механизмов: FIFA Regulations on the Status and Transfer of Players (компенсация за подготовку, механизм солидарности). Условия — по актуальной редакции.',
     });
@@ -166,11 +166,11 @@ module.exports = async (d, pres) => {
       { title: 'Продавать', text: 'Трансфер с бонусами и процентом от перепродажи.' },
     ], { y: 2.3, titleH: 0.45, textH: 1.0 });
     d.card(s, M, 4.6, 5.95, 1.85, { name: 'a5_c1' });
-    d.text(s, 'Компенсация за подготовку', { x: M + 0.25, y: 4.75, w: 5.5, h: 0.3, fontSize: 13.5, bold: true, color: '0B6B45' });
-    d.text(s, 'Выплачивается клубам, готовившим игрока в возрасте 12–21\u00a0года, при первом профессиональном контракте и последующих переходах до 23 лет (FIFA RSTP).', { x: M + 0.25, y: 5.12, w: 5.5, h: 1.2, fontSize: 12, color: '3A4456' });
+    d.text(s, 'Компенсация за подготовку', { x: M + 0.25, y: 4.75, w: 5.5, h: 0.3, fontSize: 13.5, bold: true, color: '2593FA' });
+    d.text(s, 'Выплачивается клубам, готовившим игрока в возрасте 12–21\u00a0года, при первом профессиональном контракте и последующих переходах до 23 лет (FIFA RSTP).', { x: M + 0.25, y: 5.12, w: 5.5, h: 1.2, fontSize: 12, color: 'B8C1D4' });
     d.card(s, 6.78, 4.6, 5.95, 1.85, { name: 'a6_c2' });
-    d.text(s, 'Механизм солидарности', { x: 7.03, y: 4.75, w: 5.5, h: 0.3, fontSize: 13.5, bold: true, color: '0B6B45' });
-    d.text(s, 'До 5% суммы каждого международного трансфера распределяется клубам, готовившим игрока в возрасте 12–23\u00a0лет (FIFA RSTP).', { x: 7.03, y: 5.12, w: 5.5, h: 1.2, fontSize: 12, color: '3A4456' });
+    d.text(s, 'Механизм солидарности', { x: 7.03, y: 4.75, w: 5.5, h: 0.3, fontSize: 13.5, bold: true, color: '2593FA' });
+    d.text(s, 'До 5% суммы каждого международного трансфера распределяется клубам, готовившим игрока в возрасте 12–23\u00a0лет (FIFA RSTP).', { x: 7.03, y: 5.12, w: 5.5, h: 1.2, fontSize: 12, color: 'B8C1D4' });
   }
 
   // 81 — League model
@@ -186,9 +186,9 @@ module.exports = async (d, pres) => {
       const x = cx + Math.cos(ang) * r * 1.35 - 1.2, y = cy + Math.sin(ang) * r - 0.42;
       d.card(s, x, y, 2.4, 0.84, { name: `a${i + 1}_n` });
       d.text(s, t, { x: x + 0.15, y: y + 0.08, w: 2.1, h: 0.32, fontSize: 12.5, bold: true, objectName: `a${i + 1}_t` });
-      d.text(s, x2, { x: x + 0.15, y: y + 0.4, w: 2.15, h: 0.4, fontSize: 9.5, color: '8D99AE', objectName: `a${i + 1}_d` });
+      d.text(s, x2, { x: x + 0.15, y: y + 0.4, w: 2.15, h: 0.4, fontSize: 9.5, color: '8A93A6', objectName: `a${i + 1}_d` });
     }
-    s.addShape(pres.shapes.OVAL, { x: 3.35, y: 3.6, w: 1.8, h: 1.3, fill: { color: '0F2E22' }, line: { color: C.accent, width: 1.5 } });
+    s.addShape(pres.shapes.OVAL, { x: 3.35, y: 3.6, w: 1.8, h: 1.3, fill: { color: '142A70' }, line: { color: C.accent, width: 1.5 } });
     d.text(s, 'PHYGITAL', { x: 3.35, y: 3.85, w: 1.8, h: 0.4, fontSize: 12, fontFace: F.displayLatin, color: C.accent, align: 'center' });
     d.text(s, 'лига', { x: 3.35, y: 4.25, w: 1.8, h: 0.35, fontSize: 12, color: C.text, align: 'center' });
     d.insight(s, 8.2, 2.0, 4.53, 4.45, 'Почему это работает', ['Уникальный продукт: реальный футбол внутри игры', 'Контент для медиа и спонсоров', 'Дополнительный канал скаутинга', 'Требует согласования с футбольной ассоциацией и правовой проверки'], { fontSize: 12.5 });
@@ -198,16 +198,16 @@ module.exports = async (d, pres) => {
   {
     const s = d.slide({
       title: 'Долгосрочная футбольная стратегия', status: 'AMB',
-      notes: 'ТЕЗИС: футбол — самое длинное по горизонту направление; каждый шаг финансируется зрелостью предыдущих.\nПоследовательность: Phygital League и детские программы (Годы 3–4) → пилот Football Academy (Годы 4–5) → любительская команда FC FootureX (Годы 5–7) → профессиональные лиги (Годы 7–10) → собственная инфраструктура (Годы 10+).\nВсе сроки — ориентиры и зависят от финансирования и решений руководства.\nСвязка: глава IX — стадион и город.',
+      notes: 'ТЕЗИС: футбол — самое длинное по горизонту направление; каждый шаг финансируется зрелостью предыдущих.\nПоследовательность: Phygital League и детские программы → пилот Football Academy → любительская команда FC FootureX → профессиональные лиги → собственная инфраструктура.\nСроки не заданы документами и зависят от финансирования и решений руководства — требуется подтверждение.\nСвязка: глава IX — стадион и город.',
     });
     d.timeline(s, [
-      { label: 'Годы 3–4', title: 'Лига и дети', text: 'Phygital League, детские программы, первые фестивали.' },
-      { label: 'Годы 4–5', title: 'Академия', text: 'Пилот Football Academy на арендуемой базе.', color: C.accent2 },
-      { label: 'Годы 5–7', title: 'Команда', text: 'Любительский состав FC FootureX, первый официальный уровень.', color: C.warn },
-      { label: 'Годы 7–10', title: 'Профессионалы', text: 'Лицензия и выход в профессиональные лиги.', color: 'E07A3F' },
-      { label: 'Годы 10+', title: 'Инфраструктура', text: 'Собственная база и стадион — по итогам ТЭО.', color: C.steel },
+      { label: 'Этап 1', title: 'Лига и дети', text: 'Phygital League, детские программы, первые фестивали.' },
+      { label: 'Этап 2', title: 'Академия', text: 'Пилот Football Academy на арендуемой базе.', color: C.accent2 },
+      { label: 'Этап 3', title: 'Команда', text: 'Любительский состав FC FootureX, первый официальный уровень.', color: C.dot },
+      { label: 'Этап 4', title: 'Профессионалы', text: 'Лицензия и выход в профессиональные лиги.', color: C.dot },
+      { label: 'Этап 5', title: 'Инфраструктура', text: 'Собственная база и стадион — по итогам ТЭО.', color: C.muted },
     ], { y: 3.0, titleH: 0.45, textH: 1.3, textSize: 12, labelSize: 14 });
     d.card(s, M, 5.2, W - 2 * M, 1.25, { name: 'a6_k' });
-    d.text(s, [{ text: 'Условие каждого шага: ', options: { bold: true, color: C.accent } }, { text: 'подтверждённое финансирование, выполнение лицензионных требований и устойчивость цифровых направлений группы. Сроки — ориентиры, не обязательства.' }], { x: M + 0.3, y: 5.2, w: 11.5, h: 1.25, fontSize: 14, valign: 'middle', color: 'D5DCE8' });
+    d.text(s, [{ text: 'Условие каждого шага: ', options: { bold: true, color: C.accent } }, { text: 'подтверждённое финансирование, выполнение лицензионных требований и устойчивость цифровых направлений группы. Сроки — ориентиры, не обязательства.' }], { x: M + 0.3, y: 5.2, w: 11.5, h: 1.25, fontSize: 14, valign: 'middle', color: 'D3D9E5' });
   }
 };

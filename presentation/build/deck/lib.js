@@ -21,12 +21,12 @@ const plain = (t) => (Array.isArray(t) ? t.map((r) => (typeof r === 'string' ? r
 const bodyFont = () => F.bodyCyrillic; // Montserrat for all running text (Poppins lacks Cyrillic; mixed fonts looked uneven)
 const dispFont = (t) => (isCyr(plain(t)) ? F.displayCyrillic : F.displayLatin);
 
-function logoPath(onDark) {
-  const real = path.join(ROOT, 'brand', onDark ? BRAND.logo.onDark : BRAND.logo.onLight);
-  if (fs.existsSync(real)) return { path: real, placeholder: false };
-  return { path: path.join(ROOT, 'brand', 'logo', `_placeholder-wordmark-${onDark ? 'on-dark' : 'on-light'}.png`), placeholder: true };
+function logoPath(kind = 'onDark') {
+  const key = kind === true || kind === false ? 'onDark' : kind;
+  return { path: path.join(ROOT, 'brand', BRAND.logo[key]), placeholder: false };
 }
-const LOGO_RATIO = 912 / 109;
+const LOGO_RATIO = 1209 / 215;   // lockup: mark + FootureX
+const HERO_RATIO = 1034 / 123;   // two-tone wordmark (brandbook cover)
 
 // ---------------------------------------------------------------- icons
 const iconCache = new Map();
@@ -62,6 +62,7 @@ class Deck {
 
   // text box with automatic font choice; opts.display uses display fonts
   text(s, t, o = {}) {
+    o = Object.fromEntries(Object.entries(o).filter(([, v]) => v !== undefined));
     const fontFace = o.fontFace || (o.display ? dispFont(t) : bodyFont(t));
     const size = o.fontSize || 14;
     if (o.w && o.h && typeof t === 'string' && !o.noFit) {
@@ -77,14 +78,17 @@ class Deck {
 
   slide(o) {
     this.n++;
-    this.dark = o.dark !== false;
-    const master = o.master || (this.dark ? 'FX_DARK' : 'FX_LIGHT');
+    this.dark = true; // brandbook: dark base only
+    const master = o.master || 'FX_DARK';
     const s = this.pres.addSlide({ masterName: master, sectionTitle: this.section });
     s._fx = { n: this.n, dark: this.dark };
     if (o.pre) o.pre(s);
     if (master === 'FX_FULL' && this.fullChrome) this.fullChrome(s);
     if (o.title && master !== 'FX_COVER') {
-      s.addText(o.title, { placeholder: 'title' });
+      const words = o.title.split(' ');
+      const cut = words.length > 1 ? words.length - 1 : 0;
+      const runs = cut ? [{ text: words.slice(0, cut).join(' ') + ' ' }, { text: words.slice(cut).join(' '), options: { color: C.accent } }] : [{ text: o.title }];
+      s.addText(runs, { placeholder: 'title' });
       if (estLines(o.title, 12.1, 24, F.displayCyrillic) > 2) warnings.push(`slide ${this.n}: title > 2 lines: ${o.title}`);
     }
     if (o.kicker !== false && master !== 'FX_COVER') this.kicker(s, o.kicker || this.chapterKicker);
@@ -97,29 +101,30 @@ class Deck {
   }
 
   kicker(s, t) {
-    this.text(s, t, { x: M, y: 0.36, w: 8.6, h: 0.26, fontSize: 10.5, fontFace: F.displayLatin, color: C.accent, charSpacing: 1.5, objectName: '!!kicker' });
+    this.text(s, '— · ' + t, { x: M, y: 0.36, w: 8.6, h: 0.26, fontSize: 10, fontFace: F.displayLatin, color: C.accent, charSpacing: 1.5, objectName: '!!kicker' });
   }
   footerChapter(s) {
-    this.text(s, this.chapterFooter || '', { x: 4.2, y: 7.06, w: 5.0, h: 0.24, fontSize: 9, fontFace: F.displayLatin, color: this.dark ? '5B6578' : '8A93A6', align: 'center', objectName: '!!chapter' });
+    this.text(s, this.chapterFooter || '', { x: 4.2, y: 7.06, w: 5.0, h: 0.24, fontSize: 9, fontFace: F.displayLatin, color: C.muted, align: 'center', objectName: '!!chapter' });
   }
 
   status(s, key) {
     const ST = {
-      ACT: ['ДЕЙСТВУЮЩЕЕ', C.accent], DEV: ['В РАЗРАБОТКЕ', C.accent2], PLAN: ['ПЛАН · ФАЗА 1', C.accent], CONCEPT: ['СТРАТЕГИЧЕСКАЯ КОНЦЕПЦИЯ', C.warn],
-      AMB: ['ДОЛГОСРОЧНАЯ АМБИЦИЯ', C.steel], CALC: ['РАСЧЁТНЫЙ СЦЕНАРИЙ · ДОПУЩЕНИЯ', C.warn], MARKET: ['РЫНОЧНЫЕ ДАННЫЕ · ИСТОЧНИКИ', C.accent2],
-      FRAME: ['УПРАВЛЕНЧЕСКАЯ МОДЕЛЬ · ПРОЕКТ', C.steel], VISION: ['ВИДЕНИЕ', C.accent], CONFIRM: ['ТРЕБУЕТСЯ ПОДТВЕРЖДЕНИЕ', C.warn],
+      ACT: ['ДЕЙСТВУЮЩЕЕ', C.accent], DEV: ['В РАЗРАБОТКЕ · FOUNDATION', C.accent2], PLAN: ['ПЛАН · ФАЗА 1', C.accent], CONCEPT: ['СТРАТЕГИЧЕСКАЯ КОНЦЕПЦИЯ', C.dot],
+      AMB: ['ДОЛГОСРОЧНАЯ АМБИЦИЯ', C.muted], CALC: ['РАСЧЁТ ПО ДАННЫМ BX', C.dot], MARKET: ['РЫНОЧНЫЕ ДАННЫЕ · ИСТОЧНИКИ', C.accent],
+      FRAME: ['УПРАВЛЕНЧЕСКАЯ МОДЕЛЬ · ПРОЕКТ', C.soft], VISION: ['ВИДЕНИЕ', C.accent], CONFIRM: ['ТРЕБУЕТСЯ ПОДТВЕРЖДЕНИЕ', C.dot],
+      DOC: ['ДОКУМЕНТЫ BX', C.accent2], NODATA: ['ЦИФРЫ НЕ ПРЕДОСТАВЛЕНЫ', C.dot], BRAND: ['БРЕНДБУК V1.0', C.accent2],
     };
     const [label, col] = ST[key] || [key, C.steel];
     const w = Math.max(1.15, 0.5 + label.length * 0.092);
     const x = W - M - w;
-    s.addShape(this.pres.shapes.ROUNDED_RECTANGLE, { x, y: 0.3, w, h: 0.32, rectRadius: 0.16, fill: { color: this.dark ? C.surface : 'FFFFFF' }, line: { color: col, width: 0.75 }, objectName: '!!statusbg' });
+    s.addShape(this.pres.shapes.ROUNDED_RECTANGLE, { x, y: 0.3, w, h: 0.32, rectRadius: 0.16, fill: { color: C.surface }, line: { color: col, width: 0.75 }, objectName: '!!statusbg' });
     s.addShape(this.pres.shapes.OVAL, { x: x + 0.13, y: 0.41, w: 0.1, h: 0.1, fill: { color: col }, line: { color: col, width: 0 }, objectName: '!!statusdot' });
     this.text(s, label, { x: x + 0.26, y: 0.3, w: w - 0.32, h: 0.32, fontSize: 8.5, bold: true, color: this.dark ? C.text : C.lightText, valign: 'middle', align: 'center', charSpacing: 0.5, objectName: '!!status' });
     this.statusLog.push([this.n, label]);
   }
 
   source(s, t) {
-    this.text(s, t, { x: M, y: 6.5, w: 9.6, h: 0.42, fontSize: 8.5, color: this.dark ? '8A96AB' : '6B7486', italic: false, valign: 'bottom', noFit: true, objectName: 'source' });
+    this.text(s, t, { x: M, y: 6.5, w: 9.6, h: 0.42, fontSize: 8.5, color: C.muted, italic: false, valign: 'bottom', noFit: true, objectName: 'source' });
     this.sourcesLog.push([this.n, t]);
   }
 
@@ -127,27 +132,27 @@ class Deck {
   card(s, x, y, w, h, o = {}) {
     s.addShape(this.pres.shapes.ROUNDED_RECTANGLE, {
       x, y, w, h, rectRadius: o.r ?? 0.12,
-      fill: { color: o.fill || (this.dark ? C.surface : 'FFFFFF'), transparency: o.transparency || 0 },
-      line: { color: o.line || (this.dark ? C.line : C.lightLine), width: o.lineW ?? 0.75 },
+      fill: { color: o.fill || (C.surface), transparency: o.transparency || 0 },
+      line: { color: o.line || (C.line), width: o.lineW ?? 0.75 },
       shadow: o.shadow === false || this.dark ? undefined : { type: 'outer', color: '9AA6BA', opacity: 0.18, blur: 8, offset: 2, angle: 90 },
       objectName: o.name,
     });
   }
   async iconBadge(s, name, x, y, d = 0.52, o = {}) {
     const col = o.color || C.accent;
-    s.addShape(this.pres.shapes.OVAL, { x, y, w: d, h: d, fill: { color: o.bg || (this.dark ? '0F2E22' : 'E3F8EE') }, line: { color: o.bg || (this.dark ? '0F2E22' : 'E3F8EE'), width: 0 }, objectName: o.name ? o.name + 'bg' : undefined });
+    s.addShape(this.pres.shapes.OVAL, { x, y, w: d, h: d, fill: { color: o.bg || C.outline }, line: { color: o.bg || C.outline, width: 0 }, objectName: o.name ? o.name + 'bg' : undefined });
     const pad = d * 0.24;
     s.addImage({ data: await icon(name, col === C.accent && !this.dark ? '0E9F64' : col), x: x + pad, y: y + pad, w: d - 2 * pad, h: d - 2 * pad, objectName: o.name });
   }
   pill(s, t, x, y, o = {}) {
     const w = o.w || 0.3 + t.length * 0.075;
     const col = o.color || C.accent;
-    s.addShape(this.pres.shapes.ROUNDED_RECTANGLE, { x, y, w, h: o.h || 0.3, rectRadius: (o.h || 0.3) / 2, fill: { color: o.fill || (this.dark ? C.surface2 : 'EEF2F7') }, line: { color: o.line || col, width: 0.5 } });
+    s.addShape(this.pres.shapes.ROUNDED_RECTANGLE, { x, y, w, h: o.h || 0.3, rectRadius: (o.h || 0.3) / 2, fill: { color: o.fill || C.surface }, line: { color: o.line || col, width: 0.5 } });
     this.text(s, t, { x, y, w, h: o.h || 0.3, fontSize: o.fontSize || 9, bold: true, color: o.textColor || (this.dark ? C.text : C.lightText), align: 'center', valign: 'middle' });
     return w;
   }
   caption(s, t = 'Концептуальная визуализация', x = W - M - 3.2, y = 6.74, o = {}) {
-    this.text(s, t, { x, y, w: o.w || 3.2, h: 0.24, fontSize: 8.5, color: o.color || 'A9B4C7', align: o.align || 'right', italic: true, valign: 'bottom' });
+    this.text(s, t, { x, y, w: o.w || 3.2, h: 0.24, fontSize: 8.5, color: o.color || C.muted, align: o.align || 'right', italic: true, valign: 'bottom' });
   }
   bg(s, img = 'renders/bg-dark.jpg') {
     s.addImage({ path: ASSET(img), x: 0, y: 0, w: W, h: H });
@@ -169,13 +174,13 @@ class Deck {
     const size = o.fontSize || 14;
     const runs = items.map((it, i) => {
       const t = typeof it === 'string' ? it : it.text;
-      const r = { text: t, options: { bullet: o.numbered ? { type: 'number' } : { code: '25A0', indent: 16 }, breakLine: i < items.length - 1, paraSpaceAfter: o.gap ?? 7, color: o.color || (this.dark ? 'D5DCE8' : '2A3343'), fontFace: bodyFont(t) } };
+      const r = { text: t, options: { bullet: o.numbered ? { type: 'number' } : { code: '25A0', indent: 16 }, breakLine: i < items.length - 1, paraSpaceAfter: o.gap ?? 7, color: o.color || (this.dark ? 'D3D9E5' : 'D3D9E5'), fontFace: bodyFont(t) } };
       return r;
     });
     const est = items.reduce((sum, it) => sum + estLines(typeof it === 'string' ? it : it.text, w - 0.3, size, F.bodyCyrillic), 0);
     const need = (est * size * 1.2 + items.length * (o.gap ?? 7)) / 72;
     if (need > h + 0.05) warnings.push(`slide ${this.n}: bullets may overflow (${need.toFixed(2)} > ${h})`);
-    s.addText(runs, { x, y, w, h, fontSize: size, valign: 'top', margin: 0, isTextBox: true, color: o.color || (this.dark ? 'D5DCE8' : '2A3343'), objectName: o.name, fit: 'none' });
+    s.addText(runs, { x, y, w, h, fontSize: size, valign: 'top', margin: 0, isTextBox: true, color: o.color || (this.dark ? 'D3D9E5' : 'D3D9E5'), objectName: o.name, fit: 'none' });
   }
 
   // ---------------------------------------------------------------- composite blocks
@@ -203,7 +208,7 @@ class Deck {
         this.text(s, it.title, { x: x + pad, y: ty, w: cw - 2 * pad, h: th, fontSize: o.titleSize || 15, bold: true, objectName: a + 't' });
         ty += th + 0.08;
       }
-      if (it.text) this.text(s, it.text, { x: x + pad, y: ty, w: cw - 2 * pad, h: y + ch - ty - (it.tag ? 0.5 : 0.18), fontSize: o.textSize || 12.5, color: this.dark ? 'B9C3D4' : '4A5466', lineSpacingMultiple: 1.1, objectName: a + 'd' });
+      if (it.text) this.text(s, it.text, { x: x + pad, y: ty, w: cw - 2 * pad, h: y + ch - ty - (it.tag ? 0.5 : 0.18), fontSize: o.textSize || 12.5, color: this.dark ? C.soft : C.soft, lineSpacingMultiple: 1.1, objectName: a + 'd' });
       if (it.tag) this.pill(s, it.tag, x + pad, y + ch - 0.48, { color: it.tagColor || C.accent, fontSize: 8.5, h: 0.27 });
       this.anim[this.n] = (this.anim[this.n] || 0) + 1;
     }
@@ -221,8 +226,8 @@ class Deck {
       let vs = o.valueSize || 38;
       while (vs > 16 && estLines(it.value, (cw - 0.5) * 0.92, vs, vf) > 1) vs -= 2;
       this.text(s, it.value, { x: x + 0.25, y: y + 0.22, w: cw - 0.5, h: 0.75, fontSize: vs, fontFace: isCyr(it.value) ? F.displayCyrillic : F.displayLatin, color: it.color || C.accent, valign: 'middle', objectName: a + 'v' });
-      this.text(s, it.label, { x: x + 0.25, y: y + 1.02, w: cw - 0.5, h: h - 1.2, fontSize: o.labelSize || 12.5, color: this.dark ? 'C9D3E3' : '3A4456', objectName: a + 'l' });
-      if (it.sub) this.text(s, it.sub, { x: x + 0.25, y: y + h - 0.36, w: cw - 0.5, h: 0.26, fontSize: 8.5, color: this.dark ? '7D899E' : '7A8396', valign: 'bottom', objectName: a + 's' });
+      this.text(s, it.label, { x: x + 0.25, y: y + 1.02, w: cw - 0.5, h: h - 1.2, fontSize: o.labelSize || 12.5, color: C.soft, objectName: a + 'l' });
+      if (it.sub) this.text(s, it.sub, { x: x + 0.25, y: y + h - 0.36, w: cw - 0.5, h: 0.26, fontSize: 8.5, color: C.muted, valign: 'bottom', objectName: a + 's' });
     });
   }
 
@@ -233,20 +238,20 @@ class Deck {
     items.forEach((it, i) => {
       const x = x0 + i * (cw + gap);
       const a = `a${i + 1}_`;
-      s.addShape(this.pres.shapes.OVAL, { x, y, w: 0.62, h: 0.62, fill: { color: i === (o.highlight ?? -1) ? C.accent : (this.dark ? C.surface2 : 'FFFFFF') }, line: { color: C.accent, width: 1.25 }, objectName: a + 'dot' });
-      this.text(s, String(i + 1).padStart(2, '0'), { x, y, w: 0.62, h: 0.62, fontSize: 13, fontFace: F.displayLatin, color: i === (o.highlight ?? -1) ? '04130C' : C.accent, align: 'center', valign: 'middle', objectName: a + 'num' });
-      if (i < n - 1) s.addShape(this.pres.shapes.LINE, { x: x + 0.72, y: y + 0.31, w: cw + gap - 0.82, h: 0, line: { color: this.dark ? '2E3B55' : 'C5CEDB', width: 1.25, dashType: 'dash', endArrowType: 'triangle' }, objectName: a + 'ln' });
+      s.addShape(this.pres.shapes.OVAL, { x, y, w: 0.62, h: 0.62, fill: { color: i === (o.highlight ?? -1) ? C.accent2 : C.surface }, line: { color: C.accent, width: 1.25 }, objectName: a + 'dot' });
+      this.text(s, String(i + 1).padStart(2, '0'), { x, y, w: 0.62, h: 0.62, fontSize: 13, fontFace: F.displayLatin, color: i === (o.highlight ?? -1) ? 'FFFFFF' : C.accent, align: 'center', valign: 'middle', objectName: a + 'num' });
+      if (i < n - 1) s.addShape(this.pres.shapes.LINE, { x: x + 0.72, y: y + 0.31, w: cw + gap - 0.82, h: 0, line: { color: C.line, width: 1.25, dashType: 'dash', endArrowType: 'triangle' }, objectName: a + 'ln' });
       const th = o.titleH || 0.6;
       const tsz = o.titleSize || (n >= 6 ? 12.5 : 14.5);
       this.text(s, it.title, { x, y: y + 0.85, w: cw - 0.05, h: th, fontSize: tsz, bold: true, objectName: a + 't' });
-      if (it.text) this.text(s, it.text, { x, y: y + 0.85 + th + 0.05, w: cw - 0.05, h: o.textH || 2.1, fontSize: o.textSize || 12.5, color: this.dark ? 'B9C3D4' : '4A5466', lineSpacingMultiple: 1.1, objectName: a + 'd' });
+      if (it.text) this.text(s, it.text, { x, y: y + 0.85 + th + 0.05, w: cw - 0.05, h: o.textH || 2.1, fontSize: o.textSize || 12.5, color: this.dark ? C.soft : C.soft, lineSpacingMultiple: 1.1, objectName: a + 'd' });
     });
   }
 
   // table helper with brand styling
   table(s, rows, o = {}) {
     const dark = this.dark;
-    const hdrFill = dark ? C.surface2 : '0E1521';
+    const hdrFill = C.outline;
     const body = rows.map((r, ri) => r.map((cell, ci) => {
       const c = typeof cell === 'object' && cell !== null && !Array.isArray(cell) ? cell : { text: String(cell) };
       const isH = ri === 0 && o.header !== false;
@@ -254,8 +259,8 @@ class Deck {
         text: c.text,
         options: {
           fontFace: bodyFont(c.text), fontSize: isH ? (o.hSize || 11) : (o.size || 11.5), bold: isH || c.bold || (o.boldFirstCol && ci === 0),
-          color: c.color || (isH ? 'FFFFFF' : dark ? 'D5DCE8' : '2A3343'),
-          fill: { color: c.fill || (isH ? hdrFill : (ri % 2 ? (dark ? C.surface : 'FFFFFF') : (dark ? '0B111B' : 'F7F9FC'))) },
+          color: c.color || (isH ? 'FFFFFF' : 'D3D9E5'),
+          fill: { color: c.fill || (isH ? hdrFill : (ri % 2 ? C.surface : '0B1220')) },
           align: c.align || (ci === 0 ? 'left' : o.align || 'left'), valign: 'middle', margin: [3, 6, 3, 6],
         },
       };
@@ -282,7 +287,7 @@ class Deck {
       s.addShape(this.pres.shapes.OVAL, { x, y: cy, w: 0.36, h: 0.36, fill: { color: C.bg }, line: { color: C.accent, width: 1.25 } });
       this.text(s, String(n), { x, y: cy, w: 0.36, h: 0.36, fontSize: 10, fontFace: F.displayLatin, color: C.accent, align: 'center', valign: 'middle' });
       this.text(s, t, { x: x + 0.5, y: cy - 0.02, w: w - 0.5, h: 0.28, fontSize: o.titleSize || 13, bold: true });
-      if (d) this.text(s, d, { x: x + 0.5, y: cy + 0.27, w: w - 0.5, h: o.dh || 0.5, fontSize: o.textSize || 11.5, color: 'B9C3D4' });
+      if (d) this.text(s, d, { x: x + 0.5, y: cy + 0.27, w: w - 0.5, h: o.dh || 0.5, fontSize: o.textSize || 11.5, color: C.soft });
       cy += o.step || 0.86;
     });
   }
@@ -291,27 +296,27 @@ class Deck {
   async hub(s, center, nodes, o = {}) {
     const cx = o.cx ?? W / 2, cy = o.cy ?? 4.35, rx = o.rx ?? 4.6, ry = o.ry ?? 2.05;
     const nw = o.nw ?? 2.35, nh = o.nh ?? 0.62;
-    s.addShape(this.pres.shapes.OVAL, { x: cx - rx, y: cy - ry, w: rx * 2, h: ry * 2, fill: { type: 'none' }, line: { color: this.dark ? '22304A' : 'D3DAE6', width: 1, dashType: 'dash' } });
-    s.addShape(this.pres.shapes.OVAL, { x: cx - rx * 0.55, y: cy - ry * 0.55, w: rx * 1.1, h: ry * 1.1, fill: { type: 'none' }, line: { color: this.dark ? '1A2638' : 'E1E6EF', width: 0.75 } });
+    s.addShape(this.pres.shapes.OVAL, { x: cx - rx, y: cy - ry, w: rx * 2, h: ry * 2, fill: { type: 'none' }, line: { color: C.line, width: 1, dashType: 'dash' } });
+    s.addShape(this.pres.shapes.OVAL, { x: cx - rx * 0.55, y: cy - ry * 0.55, w: rx * 1.1, h: ry * 1.1, fill: { type: 'none' }, line: { color: '18243A', width: 0.75 } });
     nodes.forEach((nd, i) => {
       const ang = -Math.PI / 2 + (i / nodes.length) * Math.PI * 2;
       const x = cx + Math.cos(ang) * rx, y = cy + Math.sin(ang) * ry;
-      s.addShape(this.pres.shapes.LINE, { x: Math.min(cx, x), y: Math.min(cy, y), w: Math.abs(x - cx) || 0.001, h: Math.abs(y - cy) || 0.001, flipH: x < cx, flipV: y < cy, line: { color: this.dark ? '26324A' : 'CBD3E0', width: 0.75 } });
+      s.addShape(this.pres.shapes.LINE, { x: Math.min(cx, x), y: Math.min(cy, y), w: Math.abs(x - cx) || 0.001, h: Math.abs(y - cy) || 0.001, flipH: x < cx, flipV: y < cy, line: { color: C.line, width: 0.75 } });
     });
     const cw = o.cw ?? 2.6, chh = o.ch ?? 1.0;
-    s.addShape(this.pres.shapes.ROUNDED_RECTANGLE, { x: cx - cw / 2, y: cy - chh / 2, w: cw, h: chh, rectRadius: 0.5, fill: { color: this.dark ? '0F2E22' : '0E1521' }, line: { color: C.accent, width: 1.5 }, objectName: '!!hubcore' });
+    s.addShape(this.pres.shapes.ROUNDED_RECTANGLE, { x: cx - cw / 2, y: cy - chh / 2, w: cw, h: chh, rectRadius: 0.5, fill: { color: C.outline }, line: { color: C.accent2, width: 1.5 }, objectName: '!!hubcore' });
     const lg = logoPath(true);
-    s.addImage({ path: lg.path, x: cx - 0.95, y: cy - 0.26, w: 1.9, h: 1.9 / LOGO_RATIO, objectName: '!!hublogo' });
+    s.addImage({ path: lg.path, x: cx - 0.95, y: cy - 0.3, w: 1.9, h: 1.9 / LOGO_RATIO, objectName: '!!hublogo' });
     this.text(s, center, { x: cx - cw / 2, y: cy + 0.06, w: cw, h: 0.3, fontSize: 9.5, color: C.accent, align: 'center', bold: true });
     for (let i = 0; i < nodes.length; i++) {
       const nd = nodes[i];
       const ang = -Math.PI / 2 + (i / nodes.length) * Math.PI * 2;
       const x = cx + Math.cos(ang) * rx, y = cy + Math.sin(ang) * ry;
       const a = `a${i + 1}_`;
-      s.addShape(this.pres.shapes.ROUNDED_RECTANGLE, { x: x - nw / 2, y: y - nh / 2, w: nw, h: nh, rectRadius: 0.12, fill: { color: this.dark ? C.surface : 'FFFFFF' }, line: { color: nd.color || (this.dark ? C.line : C.lightLine), width: 1 }, objectName: a + 'n' });
+      s.addShape(this.pres.shapes.ROUNDED_RECTANGLE, { x: x - nw / 2, y: y - nh / 2, w: nw, h: nh, rectRadius: 0.12, fill: { color: C.surface }, line: { color: nd.color || (C.line), width: 1 }, objectName: a + 'n' });
       if (nd.icon) s.addImage({ data: await icon(nd.icon, nd.color || C.accent), x: x - nw / 2 + 0.14, y: y - 0.16, w: 0.32, h: 0.32, objectName: a + 'i' });
       this.text(s, nd.title, { x: x - nw / 2 + (nd.icon ? 0.54 : 0.15), y: y - nh / 2 + 0.06, w: nw - (nd.icon ? 0.64 : 0.3), h: nd.sub ? 0.28 : nh - 0.12, fontSize: o.fs || 11, bold: true, valign: nd.sub ? 'bottom' : 'middle', objectName: a + 't' });
-      if (nd.sub) this.text(s, nd.sub, { x: x - nw / 2 + (nd.icon ? 0.54 : 0.15), y: y + 0.0, w: nw - (nd.icon ? 0.64 : 0.3), h: 0.24, fontSize: 9, color: nd.subColor || (this.dark ? '8D99AE' : '5B6578'), objectName: a + 's' });
+      if (nd.sub) this.text(s, nd.sub, { x: x - nw / 2 + (nd.icon ? 0.54 : 0.15), y: y + 0.0, w: nw - (nd.icon ? 0.64 : 0.3), h: 0.24, fontSize: 9, color: nd.subColor || C.muted, objectName: a + 's' });
     }
   }
 
@@ -322,13 +327,13 @@ class Deck {
       const y = y0 + i * (lh + gap);
       const a = `a${i + 1}_`;
       this.card(s, x, y, w, lh, { name: a + 'bg', fill: L.fill });
-      s.addShape(this.pres.shapes.ROUNDED_RECTANGLE, { x: x + 0.1, y: y + 0.1, w: lw, h: lh - 0.2, rectRadius: 0.08, fill: { color: L.color || (this.dark ? '0F2E22' : 'E3F8EE') }, line: { color: L.color || (this.dark ? '0F2E22' : 'E3F8EE'), width: 0 }, objectName: a + 'lb' });
-      this.text(s, L.title, { x: x + 0.22, y: y + 0.1, w: lw - 0.24, h: lh - 0.2, fontSize: o.titleSize || 12.5, bold: true, valign: 'middle', color: L.textColor || (this.dark ? C.accent : '0B6B45'), objectName: a + 'lt' });
+      s.addShape(this.pres.shapes.ROUNDED_RECTANGLE, { x: x + 0.1, y: y + 0.1, w: lw, h: lh - 0.2, rectRadius: 0.08, fill: { color: L.color || C.outline }, line: { color: L.color || C.outline, width: 0 }, objectName: a + 'lb' });
+      this.text(s, L.title, { x: x + 0.22, y: y + 0.1, w: lw - 0.24, h: lh - 0.2, fontSize: o.titleSize || 12.5, bold: true, valign: 'middle', color: L.textColor || C.accent, objectName: a + 'lt' });
       const n = L.items.length; const iw = (w - lw - 0.3 - 0.12 * (n - 1) - 0.1) / n;
       L.items.forEach((t, j) => {
         const ix = x + lw + 0.3 + j * (iw + 0.12);
-        s.addShape(this.pres.shapes.ROUNDED_RECTANGLE, { x: ix, y: y + 0.14, w: iw, h: lh - 0.28, rectRadius: 0.07, fill: { color: this.dark ? '0B111B' : 'F4F6FA' }, line: { color: this.dark ? '1E2A3E' : 'E1E6EF', width: 0.5 } });
-        this.text(s, t, { x: ix + 0.08, y: y + 0.14, w: iw - 0.16, h: lh - 0.28, fontSize: o.itemSize || 11, align: 'center', valign: 'middle', color: this.dark ? 'D5DCE8' : '2A3343' });
+        s.addShape(this.pres.shapes.ROUNDED_RECTANGLE, { x: ix, y: y + 0.14, w: iw, h: lh - 0.28, rectRadius: 0.07, fill: { color: '0B1220' }, line: { color: C.line, width: 0.5 } });
+        this.text(s, t, { x: ix + 0.08, y: y + 0.14, w: iw - 0.16, h: lh - 0.28, fontSize: o.itemSize || 11, align: 'center', valign: 'middle', color: this.dark ? 'D3D9E5' : 'D3D9E5' });
       });
     });
   }
@@ -337,7 +342,7 @@ class Deck {
   timeline(s, items, o = {}) {
     const x0 = o.x ?? M, w = o.w ?? W - 2 * M, y = o.y ?? 3.0, n = items.length;
     const step = w / n;
-    s.addShape(this.pres.shapes.LINE, { x: x0, y, w, h: 0, line: { color: this.dark ? '2E3B55' : 'C5CEDB', width: 1.5 } });
+    s.addShape(this.pres.shapes.LINE, { x: x0, y, w, h: 0, line: { color: C.line, width: 1.5 } });
     items.forEach((it, i) => {
       const x = x0 + i * step;
       const a = `a${i + 1}_`;
@@ -345,7 +350,7 @@ class Deck {
       s.addShape(this.pres.shapes.OVAL, { x: x + 0.02, y: y - 0.11, w: 0.22, h: 0.22, fill: { color: col }, line: { color: this.dark ? C.bg : 'FFFFFF', width: 2 }, objectName: a + 'd' });
       this.text(s, it.label, { x, y: y - 0.62, w: step - 0.15, h: 0.36, fontSize: o.labelSize || 13, fontFace: isCyr(it.label) ? F.displayCyrillic : F.displayLatin, color: col, objectName: a + 'l' });
       this.text(s, it.title, { x, y: y + 0.28, w: step - 0.2, h: o.titleH || 0.55, fontSize: o.titleSize || 13.5, bold: true, objectName: a + 't' });
-      if (it.text) this.text(s, it.text, { x, y: y + 0.28 + (o.titleH || 0.55) + 0.04, w: step - 0.2, h: o.textH || 2.4, fontSize: o.textSize || 11.5, color: this.dark ? 'B9C3D4' : '4A5466', lineSpacingMultiple: 1.1, objectName: a + 'x' });
+      if (it.text) this.text(s, it.text, { x, y: y + 0.28 + (o.titleH || 0.55) + 0.04, w: step - 0.2, h: o.textH || 2.4, fontSize: o.textSize || 11.5, color: this.dark ? C.soft : C.soft, lineSpacingMultiple: 1.1, objectName: a + 'x' });
     });
   }
 
@@ -355,12 +360,12 @@ class Deck {
     const axis = dark ? '8D99AE' : '5B6578';
     const base = {
       x: o.x ?? M, y: o.y ?? 2.0, w: o.w ?? 7.6, h: o.h ?? 4.5,
-      chartColors: o.colors || (data.length === 1 && type !== 'doughnut' && type !== 'pie' ? [C.accent] : [C.accent, C.accent2, C.steel, C.warn, '7A8699', '2E7D5B']),
+      chartColors: o.colors || (data.length === 1 && type !== 'doughnut' && type !== 'pie' ? [C.accent2] : [C.accent2, C.accent, C.dot, C.soft, C.line, C.kit]),
       catAxisLabelColor: axis, valAxisLabelColor: axis, catAxisLabelFontFace: '+mn-lt', valAxisLabelFontFace: '+mn-lt', catAxisLabelFontSize: 10, valAxisLabelFontSize: 10,
-      valGridLine: { color: dark ? '1E2A3E' : 'E1E6EF', size: 0.5 }, catGridLine: { style: 'none' },
+      valGridLine: { color: '1A2A40', size: 0.5 }, catGridLine: { style: 'none' },
       catAxisLineShow: false, valAxisLineShow: false,
       showLegend: o.legend ?? data.length > 1, legendPos: 'b', legendFontFace: '+mn-lt', legendFontSize: 10, legendColor: axis,
-      showValue: o.showValue ?? true, dataLabelColor: dark ? 'E6ECF5' : '2A3343', dataLabelFontSize: 9, dataLabelFontFace: '+mn-lt',
+      showValue: o.showValue ?? true, dataLabelColor: dark ? 'E6ECF5' : 'D3D9E5', dataLabelFontSize: 9, dataLabelFontFace: '+mn-lt',
       dataLabelPosition: o.labelPos, dataLabelFormatCode: o.fmt || '0',
       valAxisLabelFormatCode: o.axisFmt || '0', valAxisMajorUnit: o.majorUnit,
       showTitle: !!o.title, title: o.title, titleColor: dark ? C.text : C.lightText, titleFontFace: '+mn-lt', titleFontSize: 12,
@@ -374,7 +379,7 @@ class Deck {
 
   insight(s, x, y, w, h, title, lines, o = {}) {
     this.card(s, x, y, w, h, { name: o.name || 'a2_ins', fill: o.fill });
-    this.text(s, title, { x: x + 0.25, y: y + 0.22, w: w - 0.5, h: 0.32, fontSize: 13, bold: true, color: o.titleColor || (this.dark ? C.accent : '0B6B45') });
+    this.text(s, title, { x: x + 0.25, y: y + 0.22, w: w - 0.5, h: 0.32, fontSize: 13, bold: true, color: o.titleColor || C.accent });
     this.bullets(s, lines, x + 0.25, y + 0.66, w - 0.5, h - 0.85, { fontSize: o.fontSize || 12, gap: o.gap ?? 6 });
   }
 
@@ -388,4 +393,4 @@ class Deck {
   }
 }
 
-module.exports = { Deck, C, F, W, H, M, ASSET, BRAND, TOTAL, logoPath, LOGO_RATIO, icon, warnings, isCyr, bodyFont, dispFont, LABELS };
+module.exports = { Deck, C, F, W, H, M, ASSET, BRAND, TOTAL, logoPath, LOGO_RATIO, HERO_RATIO, icon, warnings, isCyr, bodyFont, dispFont, LABELS };

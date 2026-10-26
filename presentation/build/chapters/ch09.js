@@ -58,28 +58,28 @@ module.exports = async (d, pres) => {
   // 87 — Stadium commercial model
   {
     const s = d.slide({
-      dark: false, title: 'Коммерческая модель стадиона: стратегические опции и источники дохода', status: 'CONFIRM',
+      title: 'Коммерческая модель стадиона: стратегические опции и источники дохода', status: 'CONFIRM',
       notes: 'ТЕЗИС: экономика стадиона строится на многофункциональности — футбольные матчи дают меньшую часть дохода, чем события, хоспиталити и коммерческие права.\nДанные: финансовые показатели стадиона в модель не включены — требуется ТЭО (рыночный анализ, вместимость, CAPEX, операционная модель, источники финансирования).\nРекомендация (для обсуждения): поэтапный путь — сначала партнёрская модель цифровых сервисов для существующих арен, затем многофункциональная арена меньшего формата, затем собственный клубный стадион.\nСвязка: далее — FootureX City.',
     });
     d.table(s, [
       ['Источник дохода', 'Драйвер', 'Оценка'],
-      ['Билеты на матчи', 'Посещаемость × цена', { text: 'ТЭО', color: 'C98A16', bold: true }],
-      ['Концерты и события', 'Число событий в год', { text: 'ТЭО', color: 'C98A16', bold: true }],
-      ['Esports-арена', 'Турниры, аренда', { text: 'ТЭО', color: 'C98A16', bold: true }],
-      ['Хоспиталити и ложи', 'Корпоративные клиенты', { text: 'ТЭО', color: 'C98A16', bold: true }],
-      ['Права на название', 'Партнёр-бренд', { text: 'ТЭО', color: 'C98A16', bold: true }],
-      ['Ритейл и F&B', 'Траты на посетителя', { text: 'ТЭО', color: 'C98A16', bold: true }],
-      ['Цифровые сервисы', 'Пользователи приложения', { text: 'ТЭО', color: 'C98A16', bold: true }],
+      ['Билеты на матчи', 'Посещаемость × цена', { text: 'ТЭО', color: '8EB4FF', bold: true }],
+      ['Концерты и события', 'Число событий в год', { text: 'ТЭО', color: '8EB4FF', bold: true }],
+      ['Esports-арена', 'Турниры, аренда', { text: 'ТЭО', color: '8EB4FF', bold: true }],
+      ['Хоспиталити и ложи', 'Корпоративные клиенты', { text: 'ТЭО', color: '8EB4FF', bold: true }],
+      ['Права на название', 'Партнёр-бренд', { text: 'ТЭО', color: '8EB4FF', bold: true }],
+      ['Ритейл и F&B', 'Траты на посетителя', { text: 'ТЭО', color: '8EB4FF', bold: true }],
+      ['Цифровые сервисы', 'Пользователи приложения', { text: 'ТЭО', color: '8EB4FF', bold: true }],
     ], { x: M, y: 2.0, w: 6.4, colW: [2.5, 2.6, 1.3], rowH: 0.54, size: 11.5, boldFirstCol: true });
     const opts = [['A', 'Партнёрская модель', 'Цифровые сервисы и esports-события на существующих аренах', 'Низкий CAPEX · первым шагом'], ['B', 'Многофункциональная арена', 'Esports, концерты и мини-футбол — меньший формат', 'Средний CAPEX · после ТЭО'], ['C', 'Клубный стадион', 'Домашняя арена FC FootureX средней вместимости', 'Высокий CAPEX · горизонт 10+ лет']];
-    d.text(s, 'Стратегические опции: A → B → C', { x: 7.25, y: 2.0, w: 5.5, h: 0.3, fontSize: 12.5, bold: true, color: '0B6B45' });
+    d.text(s, 'Стратегические опции: A → B → C', { x: 7.25, y: 2.0, w: 5.5, h: 0.3, fontSize: 12.5, bold: true, color: '2593FA' });
     opts.forEach(([k, t, x2, r], i) => {
       const y = 2.42 + i * 1.36;
       d.card(s, 7.25, y, 5.48, 1.22, { name: `a${i + 2}_o` });
-      d.text(s, k, { x: 7.42, y: y + 0.18, w: 0.6, h: 0.6, fontSize: 24, fontFace: F.displayLatin, color: '0E9F64' });
+      d.text(s, k, { x: 7.42, y: y + 0.18, w: 0.6, h: 0.6, fontSize: 24, fontFace: F.displayLatin, color: '2593FA' });
       d.text(s, t, { x: 8.05, y: y + 0.12, w: 4.5, h: 0.3, fontSize: 13, bold: true });
-      d.text(s, x2, { x: 8.05, y: y + 0.44, w: 4.5, h: 0.4, fontSize: 11, color: '4A5466' });
-      d.text(s, r, { x: 8.05, y: y + 0.86, w: 4.5, h: 0.26, fontSize: 10.5, bold: true, color: 'C98A16' });
+      d.text(s, x2, { x: 8.05, y: y + 0.44, w: 4.5, h: 0.4, fontSize: 11, color: 'B8C1D4' });
+      d.text(s, r, { x: 8.05, y: y + 0.86, w: 4.5, h: 0.26, fontSize: 10.5, bold: true, color: '8EB4FF' });
     });
   }
 
@@ -104,7 +104,7 @@ module.exports = async (d, pres) => {
     });
     d.callouts(s, 'city-plan', [['stadium', 1], ['arena', 2], ['campus', 3, 0.35, 0], ['plaza', 4, 0, 0.2], ['resiBlock', 5], ['park', 6], ['academy', 7], ['sports', 8]], { dx: -1.5 });
     d.legend(s, [[1, 'Стадион', null], [2, 'Esports-арена', null], [3, 'Технологический кампус', null], [4, 'Бульвар и ритейл', null], [5, 'Жилые кварталы', null], [6, 'Центральный парк', null], [7, 'Образовательный кампус', null], [8, 'Спортивный центр', null]], 9.4, 2.05, 3.33, { step: 0.52, titleSize: 12.5 });
-    d.text(s, 'Схема без масштаба', { x: 9.4, y: 6.3, w: 3.3, h: 0.25, fontSize: 10, color: '8D99AE' });
+    d.text(s, 'Схема без масштаба', { x: 9.4, y: 6.3, w: 3.3, h: 0.25, fontSize: 10, color: '8A93A6' });
   }
 
   // 90 — Tech campus
@@ -119,7 +119,7 @@ module.exports = async (d, pres) => {
       const [ic, t, x2] = it[i]; const y = 2.2 + i * 0.8;
       await d.iconBadge(s, ic, M + 0.25, y, 0.5, { name: `a${i + 2}_i` });
       d.text(s, t, { x: M + 0.9, y: y - 0.03, w: 4.6, h: 0.3, fontSize: 13, bold: true, objectName: `a${i + 2}_t` });
-      d.text(s, x2, { x: M + 0.9, y: y + 0.27, w: 4.6, h: 0.28, fontSize: 11, color: 'B9C3D4', objectName: `a${i + 2}_d` });
+      d.text(s, x2, { x: M + 0.9, y: y + 0.27, w: 4.6, h: 0.28, fontSize: 11, color: 'B8C1D4', objectName: `a${i + 2}_d` });
     }
   }
 
@@ -150,7 +150,7 @@ module.exports = async (d, pres) => {
       const [ic, t, x2] = it[i]; const y = 2.2 + i * 0.8;
       await d.iconBadge(s, ic, M + 0.25, y, 0.5, { name: `a${i + 2}_i` });
       d.text(s, t, { x: M + 0.9, y: y - 0.03, w: 4.6, h: 0.3, fontSize: 13, bold: true, objectName: `a${i + 2}_t` });
-      d.text(s, x2, { x: M + 0.9, y: y + 0.27, w: 4.6, h: 0.28, fontSize: 11, color: 'B9C3D4', objectName: `a${i + 2}_d` });
+      d.text(s, x2, { x: M + 0.9, y: y + 0.27, w: 4.6, h: 0.28, fontSize: 11, color: 'B8C1D4', objectName: `a${i + 2}_d` });
     }
   }
 
@@ -182,7 +182,7 @@ module.exports = async (d, pres) => {
     ph.forEach(([n, t, col], i) => {
       const y = 2.2 + i * 0.55;
       s.addShape(pres.shapes.ROUNDED_RECTANGLE, { x: 7.4, y, w: 0.42, h: 0.42, rectRadius: 0.08, fill: { color: col }, line: { color: col, width: 0 } });
-      d.text(s, n, { x: 7.4, y, w: 0.42, h: 0.42, fontSize: 11, fontFace: F.displayLatin, color: '04130C', align: 'center', valign: 'middle' });
+      d.text(s, n, { x: 7.4, y, w: 0.42, h: 0.42, fontSize: 11, fontFace: F.displayLatin, color: 'FFFFFF', align: 'center', valign: 'middle' });
       d.text(s, 'Очередь ' + n + ' · ' + t, { x: 7.98, y, w: 4.6, h: 0.42, fontSize: 13, bold: true, valign: 'middle' });
     });
     d.text(s, 'Варианты структуры финансирования', { x: 7.4, y: 3.95, w: 5.1, h: 0.3, fontSize: 13, bold: true, color: C.accent });

@@ -8,10 +8,10 @@ const { Deck, C, F, W, H, M, ASSET, TOTAL, logoPath, LOGO_RATIO, warnings } = re
 const OUT = path.join(__dirname, '..', 'output', 'FootureX_Uzbekistan_Corporate_Presentation.pptx');
 
 const THEME = {
-  name: 'FootureX Provisional',
+  name: 'FootureX Brand Book v1.0',
   headFontFace: F.displayCyrillic,
   bodyFontFace: F.bodyCyrillic,
-  colors: { dk1: '0B111B', lt1: 'FFFFFF', dk2: C.bg, lt2: C.lightBg, accent1: C.accent, accent2: C.accent2, accent3: C.steel, accent4: C.warn, accent5: '7A8699', accent6: '2E7D5B', hlink: C.accent2, folHlink: C.muted },
+  colors: { dk1: C.bg, lt1: 'FFFFFF', dk2: C.surface, lt2: C.soft, accent1: C.accent2, accent2: C.accent, accent3: C.kit, accent4: C.dot, accent5: C.line, accent6: C.outline, hlink: C.accent, folHlink: C.muted },
 };
 
 const CHAPTERS = [
@@ -33,11 +33,11 @@ function masters(pres) {
   const ld = logoPath(true), ll = logoPath(false);
   const titlePh = (color) => ({ placeholder: { options: { name: 'title', type: 'title', x: M, y: 0.72, w: W - 2 * M, h: 1.0, fontFace: F.displayCyrillic, fontSize: 23, color, valign: 'top', align: 'left', margin: 0, lineSpacingMultiple: 1.05 }, text: '' } });
   const footer = (lg, numColor) => [
-    { image: { x: M, y: 7.08, w: 0.17 * LOGO_RATIO, h: 0.17, path: lg.path } },
+    { image: { x: M, y: 7.06, w: 0.2 * LOGO_RATIO, h: 0.2, path: lg.path } },
     { text: { text: `/ ${TOTAL}`, options: { x: W - M - 0.55, y: 7.04, w: 0.55, h: 0.26, fontFace: F.bodyLatin, fontSize: 9, color: numColor, align: 'left', valign: 'middle', margin: 0 } } },
   ];
   const num = (color) => ({ x: W - M - 1.05, y: 7.04, w: 0.48, h: 0.26, fontFace: F.bodyLatin, fontSize: 9, color, align: 'right', valign: 'middle', margin: 0 });
-  pres.defineSlideMaster({ title: 'FX_DARK', background: { path: ASSET('renders/bg-dark.jpg') }, objects: [...footer(ld, '6E7A90'), titlePh(C.text)], slideNumber: num(C.text) });
+  pres.defineSlideMaster({ title: 'FX_DARK', background: { path: ASSET('renders/bg-dark.jpg') }, objects: [...footer(ld, C.muted), titlePh(C.text)], slideNumber: num(C.text) });
   pres.defineSlideMaster({ title: 'FX_LIGHT', background: { color: C.lightBg }, objects: [...footer(ll, '6B7486'), titlePh(C.lightText)], slideNumber: num(C.lightText) });
   pres.defineSlideMaster({ title: 'FX_FULL', background: { color: C.bg }, objects: [titlePh(C.text)] });
   pres.defineSlideMaster({ title: 'FX_COVER', background: { color: C.bg }, objects: [] });
@@ -57,7 +57,7 @@ function masters(pres) {
   // full-bleed slide chrome added on the slide itself (master objects would sit under the image)
   d.fullChrome = (s) => {
     const lg = logoPath(true);
-    s.addImage({ path: lg.path, x: M, y: 7.08, w: 0.17 * LOGO_RATIO, h: 0.17 });
+    s.addImage({ path: lg.path, x: M, y: 7.06, w: 0.2 * LOGO_RATIO, h: 0.2 });
     s.slideNumber = { x: W - M - 1.05, y: 7.04, w: 0.48, h: 0.26, fontFace: F.bodyLatin, fontSize: 9, color: C.text, align: 'right', valign: 'middle', margin: 0 };
     d.text(s, `/ ${TOTAL}`, { x: W - M - 0.55, y: 7.04, w: 0.55, h: 0.26, fontFace: F.bodyLatin, fontSize: 9, color: 'A9B4C7', valign: 'middle' });
   };

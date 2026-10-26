@@ -121,8 +121,8 @@ def collect_targets(xml_bytes):
 def theme_scheme():
     import json
     b = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'brand', 'brand.json'), encoding='utf-8'))['colors']
-    pairs = [('dk1', '0B111B'), ('lt1', 'FFFFFF'), ('dk2', b['bg']), ('lt2', b['lightBg']), ('accent1', b['accent']), ('accent2', b['accent2']),
-             ('accent3', b['steel']), ('accent4', b['warn']), ('accent5', '7A8699'), ('accent6', '2E7D5B'), ('hlink', b['accent2']), ('folHlink', b['muted'])]
+    pairs = [('dk1', b['bg']), ('lt1', 'FFFFFF'), ('dk2', b['surface']), ('lt2', b['soft']), ('accent1', b['accent2']), ('accent2', b['accent']),
+             ('accent3', b['kit']), ('accent4', b['dot']), ('accent5', b['line']), ('accent6', b['outline']), ('hlink', b['accent']), ('folHlink', b['muted'])]
     return '<a:clrScheme name="FootureX">' + ''.join(f'<a:{k}><a:srgbClr val="{v}"/></a:{k}>' for k, v in pairs) + '</a:clrScheme>'
 
 

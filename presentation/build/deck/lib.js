@@ -130,7 +130,7 @@ class Deck {
 
   status(s, key) {
     const ST = {
-      ACT: ['ДЕЙСТВУЮЩЕЕ', C.accent], DEV: ['ПРОЕКТ · ЭТАП FOUNDATION', C.accent2], PLAN: ['КОНЦЕПЦИЯ · ФАЗА 1', C.accent], CONCEPT: ['СТРАТЕГИЧЕСКАЯ КОНЦЕПЦИЯ', C.dot],
+      ACT: ['ДЕЙСТВУЮЩЕЕ', C.accent], DEV: ['В РАЗРАБОТКЕ · STAGE 0 MVP', C.accent2], PLAN: ['КОНЦЕПЦИЯ · ФАЗА 1', C.accent], CONCEPT: ['СТРАТЕГИЧЕСКАЯ КОНЦЕПЦИЯ', C.dot],
       AMB: ['ДОЛГОСРОЧНАЯ АМБИЦИЯ', C.muted], CALC: ['РАСЧЁТ ПО ДАННЫМ BX', C.dot], MARKET: ['РЫНОЧНЫЕ ДАННЫЕ · ИСТОЧНИКИ', C.accent],
       FRAME: ['УПРАВЛЕНЧЕСКАЯ МОДЕЛЬ · ПРОЕКТ', C.soft], VISION: ['ВИДЕНИЕ', C.accent], CONFIRM: ['ТРЕБУЕТСЯ ПОДТВЕРЖДЕНИЕ', C.dot],
       DOC: ['ДОКУМЕНТЫ BX', C.accent2], NODATA: ['ЦИФРЫ НЕ ПРЕДОСТАВЛЕНЫ', C.dot], BRAND: ['БРЕНДБУК V1.0', C.accent2],
@@ -178,12 +178,13 @@ class Deck {
     return w;
   }
   caption(s, t = 'Концептуальная визуализация', x = W - M - 3.2, y = 6.74, o = {}) {
-    if (o.backing) { // readable on busy imagery
-      const tw = Math.min(o.w || 3.2, 0.25 + t.length * 0.062);
+    // always on a dark backing so the «concept» label stays readable on busy renders and video
+    if (o.backing !== false) {
+      const tw = Math.min(o.w || 3.2, 0.3 + t.length * 0.08);
       const bx = (o.align || 'right') === 'right' ? x + (o.w || 3.2) - tw : x;
-      s.addShape(this.pres.shapes.ROUNDED_RECTANGLE, { x: bx - 0.04, y: y - 0.02, w: tw + 0.08, h: 0.28, rectRadius: 0.06, fill: { color: C.bg, transparency: 25 }, line: { color: C.bg, width: 0 } });
+      s.addShape(this.pres.shapes.ROUNDED_RECTANGLE, { x: bx - 0.04, y: y - 0.03, w: tw + 0.08, h: 0.3, rectRadius: 0.06, fill: { color: C.bg, transparency: 10 }, line: { color: C.bg, width: 0 } });
     }
-    this.text(s, t, { x, y, w: o.w || 3.2, h: 0.24, fontSize: 9, color: o.color || C.muted, align: o.align || 'right', italic: true, valign: 'bottom' });
+    this.text(s, t, { x, y, w: o.w || 3.2, h: 0.24, fontSize: 10, color: o.color || C.soft, align: o.align || 'right', italic: true, valign: 'bottom' });
   }
   bg(s, img = 'renders/bg-dark.jpg') {
     s.addImage({ path: ASSET(img), x: 0, y: 0, w: W, h: H });

@@ -5,10 +5,10 @@ const { opener, renderPanel } = require('./common');
 module.exports = async (d, pres) => {
   // 114 — Ecosystem of the future
   await opener(d, {
-    img: 'renders/city-smart-smart.jpg', title: 'FootureX Uzbekistan — экосистема будущего', status: 'VISION', scale: 1.1, dx: 2.0,
+    img: 'renders/city-wide.jpg', title: 'FootureX Uzbekistan — экосистема будущего', status: 'VISION', scale: 1.05, dx: 1.4,
     lead: 'Через 10–20 лет FootureX — группа, где программное обеспечение, AI, игры, образование, киберспорт и футбол работают как одна система.',
     points: [['11', 'направлений одной экосистемы'], ['4', 'фазы последовательной реализации'], ['1', 'бренд: FootureX']],
-    notes: 'ТЕЗИС: экосистема будущего — результат последовательности, а не одновременного запуска всего.\nВизуализация — концептуальная (Smart City FootureX).\nСвязка: далее — влияние на индустрию Узбекистана.',
+    notes: 'ТЕЗИС: экосистема будущего — результат последовательности, а не одновременного запуска всего.\nВизуализация — концептуальная (общий вид квартала FootureX City).\nСвязка: далее — влияние на индустрию Узбекистана.',
   });
 
   // 115 — Strategic impact on Uzbekistan

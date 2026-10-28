@@ -111,7 +111,7 @@ fs.writeFileSync(path.join(__dirname, '..', 'assets', 'finmodel.json'), JSON.str
     row.getCell(5).value = { formula: `B${rn}*'Каталог BX-013'!E${cr}` };
     row.getCell(6).value = { formula: `B${rn}*'Каталог BX-013'!F${cr}` };
   });
-  k.addRow(['Взносы — внутриигровая валюта: оборот между пользователями и расход валюты, а не денежная выручка. Базовое число мест BX-013 не задаёт; назначение казны не определено.']);
+  k.addRow(['Взносы — внутриигровая валюта: оборот между пользователями и расход валюты, а не денежная выручка. Базовое число мест BX-013 не задаёт; назначение казны не определено. В модели данных MVP: 20 мест по умолчанию, казна — сжигание (treasuryBurn); как норма BX-013 требует подтверждения.']);
   k.addRow([]); const bh = k.addRow(['Premium Pass', 'USD за сезон', 'USD в день', 'Полных сезонов в год', 'Макс. USD в год на 1 плательщика']); head(k, bh.number);
   const bp = k.addRow(['Premium Pass', { formula: `'Каталог BX-013'!B${pp.number}` }]); const bn = bp.number;
   bp.getCell(3).value = { formula: `B${bn}/'Каталог BX-013'!C${pp.number}` }; bp.getCell(4).value = { formula: `INT(365/'Каталог BX-013'!C${pp.number})` }; bp.getCell(5).value = { formula: `B${bn}*D${bn}` };

@@ -1,0 +1,188 @@
+{
+ "source": "BX-013 Approved Services Catalog v1.0 (июнь 2026)",
+ "packs": [
+  {
+   "qty": 30,
+   "usd": 1.99,
+   "usdPerCoin": 0.06633333333333333,
+   "coinsPerUsd": 15.075376884422111
+  },
+  {
+   "qty": 60,
+   "usd": 3.99,
+   "usdPerCoin": 0.0665,
+   "coinsPerUsd": 15.037593984962406
+  },
+  {
+   "qty": 90,
+   "usd": 5.99,
+   "usdPerCoin": 0.06655555555555556,
+   "coinsPerUsd": 15.025041736227045
+  },
+  {
+   "qty": 150,
+   "usd": 9.5,
+   "usdPerCoin": 0.06333333333333334,
+   "coinsPerUsd": 15.789473684210526
+  },
+  {
+   "qty": 400,
+   "usd": 24.99,
+   "usdPerCoin": 0.062474999999999996,
+   "coinsPerUsd": 16.006402561024412
+  }
+ ],
+ "minUsd": 0.062474999999999996,
+ "maxUsd": 0.06655555555555556,
+ "gamePacks": [
+  [
+   "Free Pack",
+   "каждые 24 ч",
+   null,
+   null
+  ],
+  [
+   "Common Pack",
+   "200 Coins",
+   "Coins",
+   200
+  ],
+  [
+   "Uncommon Pack",
+   "800 Coins",
+   "Coins",
+   800
+  ],
+  [
+   "Rare Pack",
+   "39 FTXcoin",
+   "FTXcoin",
+   39
+  ],
+  [
+   "Epic Pack",
+   "59 FTXcoin",
+   "FTXcoin",
+   59
+  ],
+  [
+   "Legendary Pack",
+   "89 FTXcoin",
+   "FTXcoin",
+   89
+  ],
+  [
+   "Immortal Pack",
+   "139 FTXcoin",
+   "FTXcoin",
+   139
+  ],
+  [
+   "Elite Pack",
+   "149 FTXcoin",
+   "FTXcoin",
+   149
+  ],
+  [
+   "Create Player",
+   "30 FTXcoin",
+   "FTXcoin",
+   30
+  ]
+ ],
+ "packUsd": [
+  {
+   "name": "Rare Pack",
+   "ftx": 39,
+   "usdLow": 2.436525,
+   "usdHigh": 2.595666666666667
+  },
+  {
+   "name": "Epic Pack",
+   "ftx": 59,
+   "usdLow": 3.686025,
+   "usdHigh": 3.926777777777778
+  },
+  {
+   "name": "Legendary Pack",
+   "ftx": 89,
+   "usdLow": 5.560275,
+   "usdHigh": 5.923444444444445
+  },
+  {
+   "name": "Immortal Pack",
+   "ftx": 139,
+   "usdLow": 8.684025,
+   "usdHigh": 9.251222222222223
+  },
+  {
+   "name": "Elite Pack",
+   "ftx": 149,
+   "usdLow": 9.308774999999999,
+   "usdHigh": 9.916777777777778
+  },
+  {
+   "name": "Create Player",
+   "ftx": 30,
+   "usdLow": 1.87425,
+   "usdHigh": 1.9966666666666668
+  }
+ ],
+ "leagues": [
+  {
+   "name": "Fan League",
+   "create": 69,
+   "fee": 5,
+   "creator": 2,
+   "pool": 2,
+   "treasury": 1,
+   "seats": 48,
+   "gross": 240,
+   "toCreator": 96,
+   "toPool": 96,
+   "toTreasury": 48,
+   "check": true
+  },
+  {
+   "name": "Pro League",
+   "create": 109,
+   "fee": 8,
+   "creator": 3,
+   "pool": 3,
+   "treasury": 2,
+   "seats": 48,
+   "gross": 384,
+   "toCreator": 144,
+   "toPool": 144,
+   "toTreasury": 96,
+   "check": true
+  },
+  {
+   "name": "Master League",
+   "create": 149,
+   "fee": 12,
+   "creator": 5,
+   "pool": 5,
+   "treasury": 2,
+   "seats": 48,
+   "gross": 576,
+   "toCreator": 240,
+   "toPool": 240,
+   "toTreasury": 96,
+   "check": true
+  }
+ ],
+ "seats": {
+  "extra": 4,
+  "extraPrice": 20,
+  "limit": 48
+ },
+ "pass": {
+  "price": 3.99,
+  "days": 14,
+  "levels": 100,
+  "perDay": 0.28500000000000003,
+  "seasonsPerYear": 26,
+  "maxPerYear": 103.74000000000001
+ }
+}

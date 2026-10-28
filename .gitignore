@@ -1,0 +1,9 @@
+presentation/build/node_modules/
+presentation/output/slide_log.json
+*.tmp
+presentation/brand/FootureX_Brandbook.pdf
+__pycache__/
+presentation/assets/video/.frames-*/
+~$*
+*.building.pptx
+*.pptx.tmp
